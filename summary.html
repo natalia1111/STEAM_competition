@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводные результаты — STEAM-компетентность</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3ee;
+    --card: #ffffff;
+    --border: #e2ddd6;
+    --accent: #3d5a80;
+    --accent2: #2d7a6b;
+    --accent3: #8b3a2e;
+    --accent4: #6a3a8a;
+    --c1: #5b8fb9;
+    --c2: #4db89e;
+    --c3: #c06a55;
+    --c4: #9d5ab8;
+    --text: #1e2533;
+    --text2: #6b7280;
+    --text3: #9ca3af;
+    --shadow: rgba(61,90,128,0.09);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 40px;
+    background: rgba(255,255,255,0.93); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .nav-links { display: flex; gap: 3px; list-style: none; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.79rem; font-weight: 700;
+    padding: 6px 12px; border-radius: 20px; transition: all 0.18s; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--accent); background: rgba(61,90,128,0.07); }
+  .nav-links a.active { color: white; background: var(--accent); }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 96px 40px 72px; }
+
+  /* Page header */
+  .page-header { text-align: center; margin-bottom: 40px; }
+  .page-badge {
+    display: inline-block; padding: 5px 15px;
+    border: 1.5px solid rgba(61,90,128,0.22); border-radius: 20px;
+    font-size: 0.7rem; font-weight: 800; color: var(--accent); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 14px; background: rgba(61,90,128,0.05);
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+    font-weight: 800; color: var(--text); margin-bottom: 8px;
+  }
+  .page-header p { color: var(--text2); font-size: 0.88rem; }
+
+  /* Name card */
+  .name-card {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  .name-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, #3d5a80, #5b8fb9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0; color: white; font-weight: 800;
+  }
+  .name-info { flex: 1; }
+  .name-label { font-size: 0.68rem; font-weight: 800; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .name-value { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+  .name-value.empty { font-weight: 600; color: var(--text3); font-size: 0.88rem; font-style: italic; }
+  .name-edit {
+    font-size: 0.75rem; color: var(--text2); text-decoration: none; font-weight: 700;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    transition: all 0.18s; flex-shrink: 0;
+  }
+  .name-edit:hover { background: var(--bg); color: var(--accent); border-color: rgba(61,90,128,0.3); }
+
+  /* Status grid */
+  .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .status-item {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 16px 14px; display: flex; flex-direction: column; gap: 5px;
+    position: relative; transition: border-color 0.2s; text-decoration: none;
+    box-shadow: 0 2px 10px var(--shadow);
+  }
+  .status-item.done { border-color: rgba(45,122,107,0.35); }
+  .status-item.done::after {
+    content: '✓'; position: absolute; top: 10px; right: 12px;
+    color: var(--accent2); font-size: 0.8rem; font-weight: 800;
+  }
+  .status-num { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
+  .status-title { font-size: 0.79rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .status-score { font-size: 1.25rem; font-weight: 800; margin-top: 3px; }
+  .status-score.empty { font-size: 0.8rem; font-weight: 600; color: var(--text3); }
+
+  /* Radar card */
+  .radar-card {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 16px;
+    padding: 32px; text-align: center; box-shadow: 0 2px 16px var(--shadow);
+  }
+  .radar-card h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 3px; color: var(--text); }
+  .radar-subtitle { font-size: 0.82rem; color: var(--text2); margin-bottom: 24px; }
+  .radar-wrap { display: flex; justify-content: center; }
+  .radar-wrap canvas { max-width: 100%; height: auto; }
+
+  /* No data */
+  .no-data { padding: 52px 20px; text-align: center; }
+  .no-data .icon { font-size: 2.8rem; margin-bottom: 14px; }
+  .no-data p { font-size: 0.87rem; color: var(--text2); line-height: 1.6; margin-bottom: 18px; }
+  .no-data a {
+    display: inline-block; padding: 11px 26px; border-radius: 30px;
+    background: var(--accent); color: white; font-weight: 700; font-size: 0.87rem;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .no-data a:hover { background: #2e4566; }
+
+  /* Legend */
+  .legend-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; color: var(--text2); font-weight: 600; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+  /* Reset btn */
+  .reset-row { text-align: center; margin-top: 20px; }
+  .reset-btn {
+    font-size: 0.75rem; color: var(--text3); background: none; border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 16px; cursor: pointer; font-family: 'Nunito', sans-serif;
+    font-weight: 700; transition: all 0.18s;
+  }
+  .reset-btn:hover { color: var(--accent3); border-color: rgba(139,58,46,0.3); }
+
+  footer { text-align: center; padding: 18px; color: var(--text3); font-size: 0.74rem; border-top: 1px solid var(--border); margin-top: 20px; }
+
+  @media (max-width: 700px) {
+    .page { padding: 84px 20px 56px; }
+    .nav { padding: 11px 20px; }
+    .nav-links { display: none; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">STEAM</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="1_motivacion.html">Мотивационно-личностный</a></li>
+    <li><a href="2_kognitivny.html">Когнитивный</a></li>
+    <li><a href="3_umeniya.html">Деятельностный: умения</a></li>
+    <li><a href="4_sposob.html">Деятельностный: способы</a></li>
+    <li><a href="summary.html" class="active">Сводные результаты</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-badge">Итоговый профиль</div>
+    <h1>Сводные результаты диагностики</h1>
+    <p>Результаты сохраняются автоматически после прохождения каждого блока</p>
+  </div>
+
+  <!-- Name -->
+  <div class="name-card" id="nameCard">
+    <div class="name-avatar" id="nameAvatar">?</div>
+    <div class="name-info">
+      <div class="name-label">Участник</div>
+      <div class="name-value" id="nameValue">—</div>
+    </div>
+    <a href="index.html" class="name-edit">← К блокам</a>
+  </div>
+
+  <!-- Status -->
+  <div class="status-grid" id="statusGrid"></div>
+
+  <!-- Radar -->
+  <div class="radar-card">
+    <h2>Общий профиль STEAM-компетентности</h2>
+    <div class="radar-subtitle" id="radarSubtitle">Пройдите хотя бы один блок, чтобы увидеть диаграмму</div>
+    <div id="radarContent">
+      <div class="no-data">
+        <div class="icon">📊</div>
+        <p>Данных пока нет. Пройдите блоки диагностики — результаты появятся здесь автоматически.</p>
+        <a href="index.html">Начать диагностику</a>
+      </div>
+    </div>
+    <div class="legend-row" id="legendRow" style="display:none">
+      <div class="legend-item"><div class="legend-dot" style="background:#5b8fb9"></div>Мотивационно-личностный</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4db89e"></div>Когнитивный</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c06a55"></div>Деятельностный: умения</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9d5ab8"></div>Деятельностный: способы</div>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button class="reset-btn" onclick="resetAll()">Сбросить все результаты</button>
+  </div>
+
+</div>
+
+<footer>Диагностика STEAM-компетентности педагогов</footer>
+
+<script>
+var BLOCKS = [
+  { key: 'steam_block1', num: '01', title: 'Мотивационно-личностный', color: '#5b8fb9', href: '1_motivacion.html' },
+  { key: 'steam_block2', num: '02', title: 'Когнитивный',             color: '#4db89e', href: '2_kognitivny.html' },
+  { key: 'steam_block3', num: '03', title: 'Деятельностный: умения',  color: '#c06a55', href: '3_umeniya.html' },
+  { key: 'steam_block4', num: '04', title: 'Деятельностный: способы', color: '#9d5ab8', href: '4_sposob.html' }
+];
+
+function init() {
+  // Name
+  var name = '';
+  try { name = localStorage.getItem('steam_user_name') || ''; } catch(e) {}
+  var nameVal = document.getElementById('nameValue');
+  var nameAvatar = document.getElementById('nameAvatar');
+  if (name) {
+    nameVal.textContent = name;
+    nameVal.className = 'name-value';
+    var initials = name.split(' ').map(function(w){ return w[0] || ''; }).slice(0,2).join('').toUpperCase();
+    nameAvatar.textContent = initials || name[0].toUpperCase();
+  } else {
+    nameVal.textContent = 'Имя не указано — введите ФИО при прохождении блока';
+    nameVal.className = 'name-value empty';
+    nameAvatar.textContent = '?';
+  }
+
+  // Status blocks
+  var grid = document.getElementById('statusGrid');
+  var results = [];
+  BLOCKS.forEach(function(b) {
+    var stored = null;
+    try { var s = localStorage.getItem(b.key); stored = s ? JSON.parse(s) : null; } catch(e) {}
+    results.push(stored);
+
+    var item = document.createElement('a');
+    item.href = b.href;
+    item.className = 'status-item' + (stored ? ' done' : '');
+    item.style.textDecoration = 'none';
+
+    var num = document.createElement('div');
+    num.className = 'status-num';
+    num.textContent = 'Блок ' + b.num;
+
+    var title = document.createElement('div');
+    title.className = 'status-title';
+    title.textContent = b.title;
+
+    var score = document.createElement('div');
+    if (stored) {
+      score.className = 'status-score';
+      score.style.color = b.color;
+      score.textContent = stored.displayScore;
+    } else {
+      score.className = 'status-score empty';
+      score.textContent = 'Не пройдено →';
+    }
+
+    item.appendChild(num);
+    item.appendChild(title);
+    item.appendChild(score);
+    grid.appendChild(item);
+  });
+
+  if (results.some(function(r){ return r; })) {
+    drawRadar(results);
+  }
+}
+
+function drawRadar(results) {
+  var content = document.getElementById('radarContent');
+  var legendRow = document.getElementById('legendRow');
+  var subtitle = document.getElementById('radarSubtitle');
+  var done = results.filter(function(r){ return r; }).length;
+  subtitle.textContent = 'Пройдено блоков: ' + done + ' из 4';
+  legendRow.style.display = 'flex';
+
+  var size = 500;
+  var canvas = document.createElement('canvas');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'radar-wrap';
+  wrap.appendChild(canvas);
+  content.innerHTML = '';
+  content.appendChild(wrap);
+
+  var ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  var cx = size / 2, cy = size / 2;
+  var maxR = 165;
+  var n = 4;
+  var aStep = (2 * Math.PI) / n;
+  var a0 = -Math.PI / 2;
+
+  // Grid levels
+  for (var lv = 1; lv <= 5; lv++) {
+    var r = maxR * (lv / 5);
+    ctx.beginPath();
+    for (var i = 0; i <= n; i++) {
+      var a = a0 + aStep * i;
+      var x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = lv === 5 ? 'rgba(61,90,128,0.18)' : 'rgba(61,90,128,0.09)';
+    ctx.lineWidth = lv === 5 ? 1.5 : 1;
+    ctx.stroke();
+    if (lv % 2 === 0 || lv === 5) {
+      ctx.fillStyle = lv === 5 ? 'rgba(61,90,128,0.04)' : 'transparent';
+      ctx.fill();
+    }
+    // Level label on top axis
+    if (lv < 5) {
+      ctx.font = '600 9px Nunito, sans-serif';
+      ctx.fillStyle = 'rgba(107,114,128,0.7)';
+      ctx.textAlign = 'center';
+      ctx.fillText(lv, cx, cy - r - 3);
+    }
+  }
+
+  // Axes
+  for (var i = 0; i < n; i++) {
+    var a = a0 + aStep * i;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + maxR * Math.cos(a), cy + maxR * Math.sin(a));
+    ctx.strokeStyle = 'rgba(61,90,128,0.15)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Normalize values
+  var vals = results.map(function(r) { return r ? (r.normalized || 0) : 0; });
+
+  // Fill polygon
+  ctx.beginPath();
+  for (var i = 0; i < n; i++) {
+    var a = a0 + aStep * i;
+    var rv = maxR * vals[i];
+    var x = cx + rv * Math.cos(a), y = cy + rv * Math.sin(a);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(61,90,128,0.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(61,90,128,0.55)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Dots per block
+  for (var i = 0; i < n; i++) {
+    if (!results[i]) continue;
+    var a = a0 + aStep * i;
+    var rv = maxR * vals[i];
+    var x = cx + rv * Math.cos(a), y = cy + rv * Math.sin(a);
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = BLOCKS[i].color;
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Labels
+  var labels = ['Мотивационно-\nличностный', 'Когнитивный', 'Деятельностный:\nумения', 'Деятельностный:\nспособы'];
+  ctx.font = '700 11px Nunito, sans-serif';
+
+  for (var i = 0; i < n; i++) {
+    var a = a0 + aStep * i;
+    var lr = maxR + 52;
+    var lx = cx + lr * Math.cos(a), ly = cy + lr * Math.sin(a);
+    var cosA = Math.cos(a);
+
+    ctx.fillStyle = results[i] ? BLOCKS[i].color : 'rgba(107,114,128,0.6)';
+    if (cosA < -0.1) ctx.textAlign = 'right';
+    else if (cosA > 0.1) ctx.textAlign = 'left';
+    else ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    var lines = labels[i].split('\n');
+    var lh = 15, th = lines.length * lh;
+    lines.forEach(function(line, li) {
+      ctx.fillText(line, lx, ly - th/2 + lh*li + lh/2);
+    });
+
+    // Score on axis
+    if (results[i]) {
+      var sr = maxR * vals[i] + 16;
+      var sx = cx + sr * Math.cos(a), sy = cy + sr * Math.sin(a);
+      ctx.font = '800 10px Nunito, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = BLOCKS[i].color;
+      ctx.fillText(results[i].displayScore, sx, sy);
+      ctx.font = '700 11px Nunito, sans-serif';
+    }
+  }
+}
+
+function resetAll() {
+  if (!confirm('Сбросить все сохранённые результаты?')) return;
+  try {
+    BLOCKS.forEach(function(b) { localStorage.removeItem(b.key); });
+    localStorage.removeItem('steam_user_name');
+  } catch(e) {}
+  location.reload();
+}
+
+init();
+</script>
+</body>
+</html>

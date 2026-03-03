@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест STEAM-компетентности</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap');
+
+  :root {
+    --primary: #3d6b8e;
+    --primary-light: #5a8fb5;
+    --primary-bg: #e8f1f8;
+    --accent: #e07b54;
+    --green: #4caf7d;
+    --orange: #f0a500;
+    --red: #e05454;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --border: #dde3ea;
+    --selected: #d0e8f5;
+    --correct: #d4f0e2;
+    --wrong: #fde0e0;
+    --correct-border: #4caf7d;
+    --wrong-border: #e05454;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #2c5f82 0%, #3d8b7a 100%);
+    color: white;
+    padding: 40px 24px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .hero p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    font-weight: 300;
+  }
+
+  /* Legend */
+  .legend {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+  }
+  .legend-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-1 { background: var(--red); }
+  .dot-2 { background: #e08844; }
+  .dot-3 { background: var(--orange); }
+  .dot-4 { background: #7bc47b; }
+  .dot-5 { background: var(--green); }
+
+  /* Main */
+  .main { max-width: 760px; margin: 0 auto; padding: 24px; }
+
+  /* Name card */
+  .name-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .name-card label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .name-card input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+    background: #fafbfc;
+  }
+  .name-card input:focus { border-color: var(--primary); background: white; }
+
+  /* Progress */
+  .progress-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-label { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+  .progress-count { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: opacity 0.3s;
+  }
+  .question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .q-number {
+    width: 34px; height: 34px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .q-text {
+    font-size: 0.97rem;
+    line-height: 1.65;
+    font-family: 'Merriweather', serif;
+    font-weight: 300;
+  }
+  .q-instruction {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 16px;
+    padding-left: 48px;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    position: relative;
+    background: white;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .option:hover:not(.disabled) {
+    border-color: var(--primary-light);
+    background: var(--primary-bg);
+  }
+  .option.selected {
+    border-color: var(--primary);
+    background: var(--selected);
+  }
+  .option.correct {
+    border-color: var(--correct-border);
+    background: var(--correct);
+  }
+  .option.wrong {
+    border-color: var(--wrong-border);
+    background: var(--wrong);
+  }
+  .option.disabled { cursor: default; }
+  .option-letter {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+  .option.selected .option-letter,
+  .option:hover:not(.disabled) .option-letter {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: white;
+  }
+  .option.correct .option-letter {
+    border-color: var(--correct-border);
+    background: var(--correct-border);
+    color: white;
+  }
+  .option.wrong .option-letter {
+    border-color: var(--wrong-border);
+    background: var(--wrong-border);
+    color: white;
+  }
+  .option-text { flex: 1; }
+
+  /* Explanation popup */
+  .explanation {
+    display: none;
+    margin-top: 16px;
+    background: #f0f9f4;
+    border: 1.5px solid #b0dfca;
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 0.87rem;
+    line-height: 1.7;
+    color: #2d5a42;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: #1e4a30; }
+  .explanation ul { padding-left: 18px; margin-top: 8px; }
+  .explanation li { margin-bottom: 4px; }
+
+  /* Submit btn */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 14px rgba(61,107,142,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(61,107,142,0.35); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .btn-secondary:hover { background: var(--primary-bg); }
+
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; justify-content: center; }
+
+  /* Results */
+  #results { display: none; }
+  .result-hero {
+    background: linear-gradient(135deg, #2c5f82 0%, #3d8b7a 100%);
+    border-radius: var(--radius);
+    color: white;
+    padding: 32px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .result-hero h2 { font-size: 1.3rem; margin-bottom: 8px; opacity: 0.9; }
+  .score-big { font-size: 4rem; font-weight: 700; line-height: 1; margin: 12px 0 6px; }
+  .score-level {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-top: 4px;
+  }
+  .level-high { background: rgba(76,175,125,0.3); color: #a8f0cc; }
+  .level-mid { background: rgba(240,165,0,0.3); color: #ffe0a0; }
+  .level-low { background: rgba(224,84,84,0.3); color: #ffc0c0; }
+
+  /* Chart */
+  .chart-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .chart-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .chart-wrap { position: relative; height: 400px; }
+
+  /* U-scores grid */
+  .u-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .u-chip {
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s;
+    border: 2px solid transparent;
+  }
+  .u-chip:hover { transform: translateY(-2px); }
+  .u-chip .u-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .u-chip .u-score { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+  .u-chip .u-of { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .u-chip.high .u-score { color: var(--green); }
+  .u-chip.mid .u-score { color: var(--orange); }
+  .u-chip.low .u-score { color: var(--red); }
+  .u-chip.high { border-color: #c8f0dc; }
+  .u-chip.mid { border-color: #ffe4a0; }
+  .u-chip.low { border-color: #ffd0d0; }
+
+  /* Tooltip for question chip explanation */
+  .u-tooltip {
+    display: none;
+    background: #f7f9fb;
+    color: #2c3e50;
+    border: 1.5px solid #c5dcea;
+    font-size: 0.84rem;
+    line-height: 1.65;
+    padding: 18px 22px;
+    border-radius: 10px;
+    margin-top: 10px;
+    width: 100%;
+    grid-column: 1 / -1;
+    position: relative;
+    box-sizing: border-box;
+    max-height: none;
+    overflow: visible;
+  }
+  .u-tooltip.show { display: block; }
+  .u-tooltip ul { margin: 6px 0 10px 0; padding-left: 20px; }
+  .u-tooltip li { margin-bottom: 5px; }
+  .u-tooltip p { margin: 10px 0 4px; }
+  .u-tooltip strong { color: #1a6b3a; font-weight: 700; }
+  .u-tooltip em { color: #b07a00; font-style: normal; font-weight: 600; }
+  .u-tooltip strong { color: #1e4a30; font-weight: 700; }
+  .u-tooltip em { font-style: italic; }
+  .u-tooltip ul { padding-left: 20px; margin: 8px 0; }
+  .u-tooltip li { margin-bottom: 5px; }
+  .u-tooltip p { margin: 6px 0; }
+
+  /* Tooltip for U description on radar */
+  .u-desc-tooltip {
+    display: none;
+    background: #2c3e50;
+    color: white;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .u-desc-tooltip strong { color: #7ecfff; }
+
+  /* Radar U description tooltip */
+  .u-desc-tooltip {
+    background: #eaf4fb;
+    border: 1.5px solid #7bbdd8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a3a52;
+    margin-top: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    animation: fadeIn 0.2s ease;
+  }
+  .u-desc-tooltip strong { color: #1a6b9a; font-weight: 700; font-size: 1rem; }
+
+  /* Retry */
+  .retry-row { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+
+  /* Score color helpers */
+  .score-green { color: var(--green); }
+  .score-orange { color: var(--orange); }
+  .score-red { color: var(--red); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.3rem; }
+    .main { padding: 16px; }
+    .score-big { font-size: 3rem; }
+    .chart-wrap { height: 300px; }
+  }
+
+  /* ===== STEAM NAV (injected) ===== */
+  .steam-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(15,22,36,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+  }
+  .steam-nav-logo {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #5b9bd5;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+  .steam-nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .steam-nav-links a {
+    color: #8fa3c0;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: block;
+  }
+  .steam-nav-links a:hover {
+    color: #eef2f8;
+    background: rgba(255,255,255,0.08);
+  }
+  .steam-nav-links a.steam-active {
+    color: white !important;
+    background: #3d5a80 !important;
+  }
+  @media (max-width: 800px) {
+    .steam-nav-links { display: none; }
+    .steam-nav { padding: 12px 20px; }
+  }
+
+</style>
+</head>
+<body style="padding-top:54px;">
+<nav class="steam-nav">
+  <div class="steam-nav-logo">STEAM</div>
+  <ul class="steam-nav-links">
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="1_motivacion.html" id="snav1">Мотивационно-личностный</a></li>
+    <li><a href="2_kognitivny.html" id="snav2">Когнитивный</a></li>
+    <li><a href="3_umeniya.html" id="snav3" class="steam-active">Деятельностный: умения</a></li>
+    <li><a href="4_sposob.html" id="snav4">Деятельностный: способы</a></li>
+    <li><a href="summary.html">Сводные результаты</a></li>
+  </ul>
+</nav>
+
+
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Определение уровней сформированности компонентов STEAM-компетентности</h1>
+	<p>Деятельностный (подкомпонент "Умения")</p>
+    <p>Выберите ответ, наиболее соответствующий логике STEAM-образования</p>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-inner">
+    <div class="legend-item"><div class="dot dot-1"></div> Низкий (&lt;2.5)</div>
+    <div class="legend-item"><div class="dot dot-3"></div> Средний (2.5–3.5)</div>
+    <div class="legend-item"><div class="dot dot-5"></div> Высокий (&gt;3.5)</div>
+  </div>
+</div>
+
+<div class="main" id="testSection">
+  <div class="name-card">
+    <label>ФИО студента</label>
+    <input type="text" id="studentName" placeholder="Введите фамилию, имя, отчество">
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-header">
+      <span class="progress-label">Прогресс</span>
+      <span class="progress-count" id="progressCount">0 / 30</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="submitBtn" onclick="submitTest()" disabled>Завершить тест</button>
+  </div>
+</div>
+
+<div class="main" id="results">
+  <div class="result-hero">
+    <h2>Результаты тестирования</h2>
+    <div id="studentNameDisplay"></div>
+    <div style="font-size:0.85rem;opacity:0.7;margin-bottom:4px">Общий балл</div>
+    <div class="score-big" id="scoreDisplay">—</div>
+    <div class="score-level" id="levelDisplay"></div>
+  </div>
+
+  <div class="chart-card">
+    <h3>Профиль STEAM-компетентности</h3>
+    <div class="chart-wrap">
+      <canvas id="radarChart"></canvas>
+    </div>
+    <div id="uDescTooltip" class="u-desc-tooltip" style="display:none;margin-top:12px"></div>
+  </div>
+
+  <div class="chart-card">
+    <h3>Результаты по умениям (нажмите на ячейку для пояснения)</h3>
+    <div class="u-grid" id="uGrid"></div>
+    <div class="u-tooltip" id="uTooltip"></div>
+  </div>
+
+  <div class="retry-row">
+    <button class="btn btn-primary" onclick="saveResult()" style="margin-right:12px">💾 Сохранить результат</button>
+    <button class="btn btn-secondary" onclick="retryTest()">Пройти заново</button>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// TEST DATA
+// =========================================================
+const uDescriptions = {
+  'У1': 'владеть способами применения современных методик и технологий в образовании для реализации STEAM-образования',
+  'У2': 'устанавливать межпредметные связи и понимать актуальность взаимосвязи STEAM-блоков',
+  'У3': 'владеть приемами и способами интеграции контента из разных предметных областей, STEAM-блоков',
+  'У4': 'обозначать ключевую проблему для организации практико-ориентированного STEAM-обучения',
+  'У5': 'организовывать проектную и проблемно-ориентированную деятельность учащихся и управлять STEAM-проектами',
+  'У6': 'владеть методиками реализации исследовательского и проектного методов в STEAM-образовании',
+  'У7': 'владеть способами отбора содержания и приемами организации учебно-познавательной деятельности учащихся',
+  'У8': 'владеть основами организации опытно-экспериментальной и научно-исследовательской деятельности учащихся',
+  'У9': 'владеть современными цифровыми технологиями на уровне, необходимом для достижения целей STEAM-образования',
+  'У10': 'владеть основами дизайна, инженерного проектирования для реализации STEAM-образования',
+  'У11': 'владеть формами и методами обучения, в т.ч. выходящими за рамки учебных занятий',
+  'У12': 'владеть способами организации самостоятельной деятельности учащихся в ходе реализации STEAM-образования',
+  'У13': 'владеть навыками межличностного общения в ходе реализации STEAM-образования (сотрудничество, кооперация, работа в команде)',
+  'У14': 'владеть навыками разработки и дизайна авторских образовательных STEAM-продуктов (творческий подход)',
+  'У15': 'владеть аппаратом диагностики уровня сформированности STEAM-компетентности учащихся',
+};
+
+const uExplanations = {
+  'У1': {
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования по следующим причинам:</li><li>интерактивность: Zoom обеспечивает качественную видеосвязь и возможность разбивки обучающихся на группы для совместной работы;</li><li>практическая направленность: использование виртуальных лабораторий Go-Lab;</li><li>исследовательский компонент: возможность проведения онлайн-экспериментов;</li><li>критерии оценки: наличие четких критериев оценивания результатов;</li><li>групповая работа: возможность организации командной деятельности.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Microsoft Teams/Discord менее распространены среди пользователей, хотя и предлагают много функций, но обучающихся часто возникает ощущение: «Где что искать?», требует привыкания.  Регистрация и вход могут быть непростыми. Нет явного упоминания виртуальных лабораторий.</li><li>Вариант В. Ограниченные возможности мессенджеров для проведения экспериментов. Сложность организации групповой работы. Отсутствие специализированных инструментов для обучения.</li><li>Вариант Г. Электронная почта – устаревший формат коммуникации. Не обеспечивает синхронное взаимодействие. Сложность в организации совместной работы.</li></ul></ul>'
+  },
+};
+
+// All 30 questions
+const questions = [
+  // У1 — 3 questions
+  {
+    id: 'q1', u: 'У1',
+    text: 'Вам нужно спроектировать онлайн-урок «Фотосинтез» в логике STEAM. Формат работы — синхронный, в уроке будет участвовать весь класс. Вам необходимо выбрать подходящий цифровой инструмент: отвечающий всем требованиям коммуникации (простота, массовость); включающий интерактивные инструменты для организации учебно-познавательной деятельности и самостоятельной работы учащихся; позволяющий работать на мобильном устройстве и/или через браузер без установки на устройство. Какие инструменты вы выберете в первую очередь?',
+    options: [
+      { letter: 'А', text: 'Для коммуникации выберу многофункциональные инструменты, например, Microsoft Teams или Discord. Создам общее сетевое хранилище для загрузки материалов. В чате оставлю подробную инструкцию к уроку. После этого, в ходе видеочата, обсудим результаты и каждый представит свои выводы.' },
+      { letter: 'Б', text: 'Для коммуникации выберу инструмент для групповых видеоконференций Zoom. Класс разобью на команды для групповой работы, материалами буду делиться во встроенном чате. В чате буду оставлять ссылки на онлайн-лабораторные работы на платформе Go-Lab. Учащиеся продемонстрируют результаты, оцениваемые по заранее озвученным критериям.' },
+      { letter: 'В', text: 'Проведу урок, используя WhatsApp, Viber или Telegram. В этих мессенджерах удобно обмениваться файлами и ссылками. Буду оставлять ссылки на видео с YouTube. Результаты работы учащиеся будут присылать в личном сообщении.' },
+      { letter: 'Г', text: 'Буду общаться с учениками по электронной почте — через неё можно обмениваться любыми материалами. Добавлю нужные материалы в облачное хранилище. По почте учащиеся будут присылать скриншоты выполненной работы.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования по следующим причинам:</li><li>практическая направленность: начинается с реального применения знаний (изучение тонометра);</li><li>интегративный подход: объединяет биологические и физические аспекты движения крови;</li><li>визуализация знаний: создание инфографики способствует лучшему усвоению материала;</li><li>применение законов физики: изучение закона Бернулли в контексте биологических процессов;</li><li>практическая значимость: связь с реальными природными явлениями и техническими приспособлениями.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Узкая фокусировка на физических аспектах, недостаточное внимание уделяется биологической составляющей; отсутствует элемент визуализации знаний.</li><li>Вариант В. Преобладает теоретический подход (анализ текста); недостаточное внимание практической деятельности; подготовка презентации не гарантирует глубокого понимания материала.</li><li>Вариант Г. Сфокусирован только на экспериментальной части; отсутствует элемент визуализации и обобщения знаний; результаты фиксируются формально в тетрадях.</li></ul></ul>'
+  },
+  {
+    id: 'q2', u: 'У1',
+    text: 'Вы решили провести интегрированный урок биологии и физики по теме «Движение крови по сосудам» в логике STEAM-образования. Обсудили с коллегой — учителем физики — межпредметные связи. Для эффективной организации урока вы сделаете следующее:',
+    options: [
+      { letter: 'А', text: 'Определим физические законы и процессы в кровеносной системе. Рассчитаем задачи по изменению кровяного давления и скорости движения крови. Проведём цифровой лабораторный эксперимент о движении жидкости по сосудам и обозначим аналогию с сосудами в физической среде.' },
+      { letter: 'Б', text: 'Начнём урок с изучения и демонстрации принципов работы тонометра. Продолжим изучение законов движения крови по сосудам. Предложим учащимся создать инфографику «Путешествие крови в организме человека». Познакомимся с проявлением закона Бернулли в природе и технике.' },
+      { letter: 'В', text: 'Предложим учащимся проанализировать текст, ответить на вопросы в рабочих листах, посмотреть видеофрагмент об опытах Гарвея. Предложим подготовить итоговую презентацию.' },
+      { letter: 'Г', text: 'Проведём урок в формате эксперимента. Продемонстрируем опыты, подтверждающие физические законы перемещения крови. Рассчитаем задачи по изменению кровяного давления. Все результаты учащиеся отразят в тетрадях.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегративный подход: объединяет художественное восприятие с научным анализом;</li><li>практико-ориентированность: включает практическую деятельность (работа с красками, использование приложений);</li><li>развивает навыки экспериментирования и исследования (определение цветовых кодов);</li><li>использует современные технологии (приложения для определения оттенков);</li><li>рефлексивный элемент: анализ влияния цвета на настроение;</li><li>командная работа (обмен результатами).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Фокусировка на субъективных ощущениях, недостаточно научной составляющей, отсутствует практическая деятельность.</li><li>Вариант Б. Преобладает формальная проверка знаний, отсутствует практическая работа, недостаточно интеграции разных областей знаний.</li><li>Вариант Г. Только сбор обратной связи, нет исследовательской составляющей, отсутствует практическая деятельность, не развивает межпредметные связи.</li></ul></ul>'
+  },
+  {
+    id: 'q3', u: 'У1',
+    text: 'Вы с учащимися посетили выставку живописи «Энергия цвета» и хотите получить эмоциональные отклики учащихся, а также акцентировать внимание на естественно-научной составляющей восприятия цвета. Вы решили провести итоговое занятие в логике STEAM с рефлексией в игровой форме. Как вы организуете этот процесс?',
+    options: [
+      { letter: 'А', text: 'Перед походом на выставку предложу игру-наблюдение — выделить картины, оставившие сильное впечатление, и вызвавшие эффект синестезии. Затем в форме письма художников друг другу попрошу объяснить выбор цветов.' },
+      { letter: 'Б', text: 'На следующий день проведу игру-викторину на знание картин, представленных в музее, с помощью флеш-карточек в Canva. После викторины предложу записать впечатления в коробку для отзывов.' },
+      { letter: 'В', text: 'Перед посещением предложу игру на внимательность — записать, какие цвета доминируют в работах. Выберем репродукции и определим оттенок краски с помощью приложения. Смешаем краски, составим палитру, определим цветовые коды оттенков. Обменяемся кодами и определим настроение по закодированному оттенку.' },
+      { letter: 'Г', text: 'Сразу после посещения создам гугл-форму с вопросами о сензитивных впечатлениях. Попрошу ответить, какие цвета оказывали успокаивающий эффект и почему. Отзывы помогут улучшить экспозицию музея.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практическую деятельность (эксперименты с воздухом);</li><li>предусматривает проектную работу (проектирование и тестирование фильтра);</li><li>интегративный подход: объединяет естественно-научные и технические аспекты;</li><li>развивает исследовательские навыки (анализ загрязнения атмосферы);</li><li>технологическая составляющая (проектирование устройства);</li><li>имеет социальную значимость (решение проблемы загрязнения);</li><li>практико-ориентированность: предполагает создание реального продукта – фильтра.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Излишне теоретический подход, ограничение только усложнением понятия; отсутствие практической составляющей и междисциплинарной интеграции.</li><li>Вариант А. Прослеживается только усложнение понятия; отсутствует практическая деятельность и междисциплинарная интеграция; не развивает технические навыки.</li></ul><li>Вариант Б. Хотя затрагивает практическую проблему, н ограничивается только теоретическим исследованием; отсутствует практическая реализация; по итогу не предусмотрено создание конкретного продукта.</li></ul>'
+  },
+  // У2 — 3 questions
+  {
+    id: 'q4', u: 'У2',
+    text: 'Вы решили выбрать объект для демонстрации межпредметных связей в контексте STEAM-образования. Посоветовавшись с коллегами, вы пришли к выводу, что наиболее полно отражает принципы STEAM-образования следующий вариант:',
+    options: [
+      { letter: 'А', text: 'Изучение темы «Воздух», что позволит проследить, как усложняется понятие «воздух» при изучении в курсах физики, географии и химии.' },
+      { letter: 'Б', text: 'Изучение темы «Воздух» с теоретическим исследованием по загрязнению воздуха: учащиеся анализируют факторы загрязнения и понимают их междисциплинарный характер.' },
+      { letter: 'В', text: 'Изучение темы «Воздух», начиная с простейших экспериментов даже в начальной школе. Проведение эмпирического исследования загрязнения атмосферы путём проектирования, сборки и тестирования воздушного фильтра с представлением результатов.' },
+      { letter: 'Г', text: 'Изучение темы «Воздух», что позволит проследить усложнение понятия «воздух» в курсах физики, географии и химии по сравнению с начальной школой.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>объединяет несколько дисциплин: биомеханику, анатомию и искусство;</li><li>включает практическую деятельность (создание работающего устройства);</li><li>развивает инженерное мышление и творческие способности;</li><li>историческая связь (работа с наследием Леонардо да Винчи, Леонардо да Винчи как пример STEAM-персоналии);</li><li>техническая составляющая (создание работающего прототипа);</li><li>проектная деятельность (разработка и создание махолета);</li><li>творческий компонент (конкурс на лучший проект).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком узко фокусируется на химической составляющей; отсутствует практическая деятельность и творческий компонент; нет междисциплинарной интеграции.</li><li>Вариант Б. Хотя затрагивает важную экологическую проблему, но не отражает техническую составляющую ее решения; не предполагается создание конкретного продукта.</li><li>Вариант Г. Слишком абстрактная тема; отсутствует практическая направленность; нет явной междисциплинарной интеграции; отсутствует элемент проектирования.</li></ul></ul>'
+  },
+  {
+    id: 'q5', u: 'У2',
+    text: 'Вы решили организовать межпредметный комплексный семинар-практикум в логике STEAM-образования. Выберите тему, которая наиболее соответствует логике STEAM:',
+    options: [
+      { letter: 'А', text: '«Белки — высокомолекулярные органические вещества»: рассмотрите строение белков с точки зрения химии и роль белков в живых организмах. В практической части продемонстрируете подготовленную презентацию.' },
+      { letter: 'Б', text: '«Аральское море — исчезающий феномен»: детально рассмотрите все факторы, приведшие к усыханию моря. В практической части сравните разновременные космические снимки.' },
+      { letter: 'В', text: '«Биомеханика, анатомия и живопись Леонардо да Винчи»: работы Леонардо носят изобретательский междисциплинарный характер. В практической части проведёте конкурс на самый совершенный орнитоптер (махолёт), созданный своими руками из подручных материалов.' },
+      { letter: 'Г', text: '«Симметрия в науке и природе»: раскрывает симметрию в природе, прослеживает её эволюцию на примере живых организмов. В практической части продемонстрируете подготовленную презентацию.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практическую деятельность (решение реальных задач);</li><li>интегративный подход: объединяет несколько предметных областей: география (часовые пояса); математика (расчёты времени), астрономия (вращение Земли).</li><li>развивает навыки командной работы;</li><li>социальная значимость (организация международных коммуникаций);</li><li>проектная деятельность (создание рабочего расписания);</li><li>предполагает создание реального продукта (решение задачи организации конференции).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком теоретический подход, отсутствует практическая направленность; нет связи с реальными задачами; отсутствует междисциплинарная интеграция.</li><li>Вариант Б. Фокусировка только на математическом аспекте; отсутствие практической деятельности; не предполагается создание конкретного продукта.</li><li>Вариант Г. Ограничение только географическим аспектом; отсутствие практической направленности и элементов проектирования; нет междисциплинарной интеграции</li></ul></ul>'
+  },
+  {
+    id: 'q6', u: 'У2',
+    text: 'Вы решили организовать урок-конференцию с учащимися из разных стран. Учащиеся испытывают трудности с определением оптимального времени из-за временной разницы (Минск, Москва, Лондон). Как вы подчеркнёте взаимосвязь этого явления с географией, математикой, астрономией?',
+    options: [
+      { letter: 'А', text: 'Объясню особенности вращения Земли вокруг оси, угловую скорость и часовые пояса. Изучим, в каких поясах расположены столицы государств.' },
+      { letter: 'Б', text: 'Решу задачу на тему часовых поясов вместе с классом, организую работу над ошибками. Дам подобную задачу в качестве закрепления на дом.' },
+      { letter: 'В', text: 'Обсужу с учащимися решение задачи на разницу в часовых поясах. Решим в парах тренинговую задачу «Позвони мне сегодня в...», определив время, удобное для общения ребят из разных стран. Рассмотрим вопросы тайм-менеджмента людей, работающих в разных поясах, и принципы командной работы в такой ситуации.' },
+      { letter: 'Г', text: 'Обсудим решение задачи, определим часовые пояса по карте. Поговорим о разных вариантах решения, причинах ошибок.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегративный подход: объединяет несколько предметных областей: химию (исследование состава специй), биологию (влияние на организм), технологию (создание аналогов), экологию (переработка пластика), экономику (стоимость производства);</li><li>включает практическую деятельность (эксперименты, создание экстрактов);</li><li>развивает исследовательские навыки (изучение процессов производства);</li><li>имеет социальную значимость (изучение экологических аспектов);</li><li>предполагает создание реального продукта (экстракты);</li><li>демонстрирует современные технологии (преобразование материалов).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Поверхностный подход, отсутствует глубокая научная составляющая; нет исследовательского компонента; ограниченная междисциплинарная интеграция.</li><li>Вариант Б. Фокусировка только на биологическом аспекте; отсутствует историческая и технологическая составляющая; нет практической деятельности.</li><li>Вариант В. Хотя и включает междисциплинарный подход, но больше ориентирован на теоретическую подготовку; отсутствует практическая исследовательская деятельность; нет технологической составляющей.</li></ul></ul>'
+  },
+  // У3 — 3 questions
+  {
+    id: 'q7', u: 'У3',
+    text: 'Ваша коллега привела пример синхронистической таблицы «Великие географические открытия», интегрировавшей географию и историю. Вы решили провести аналогичные уроки, но расширить их в контексте STEAM. Что вы добавите?',
+    options: [
+      { letter: 'А', text: 'Небольшой эксперимент: учащиеся с завязанными глазами будут отгадывать различные пряности. Затем изучим распространение специй в мире, учащиеся нанесут на карту родину некоторых из них.' },
+      { letter: 'Б', text: 'Предложу учащимся провести исследование «Влияние специй на организм человека». После исследования учащиеся определят вредные и полезные свойства специй.' },
+      { letter: 'В', text: 'Дам учащимся задание подготовить выступления на тему «Самые известные специи мира», «Специи как причина географических открытий» и «Как специи формировали мировую торговлю».' },
+      { letter: 'Г', text: 'Предложу учащимся изучить, почему ваниль — одна из самых дорогих пряностей. Проведём эксперименты по изготовлению экстрактов из специй. Изучим, как люди создают искусственные аналоги специй, как и зачем преобразуют пластик в ванилин.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практическую деятельность (проведение эксперимента);</li><li>интегративный подход: объединяет литературу и физику через конкретный пример;</li><li>развивает исследовательские навыки через наблюдение и анализ;</li><li>содержит наглядную демонстрацию явления (демонстрация процесса);</li><li>связь с реальной жизнью: дает возможность применить знания в бытовых ситуациях.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Ограничивается только просмотром видео; отсутствует практическая составляющая; нет возможности самостоятельного исследования.</li><li>Вариант В. Слишком абстрактный подход через дискуссию, отсутствует практическая демонстрация; меньше возможностей для формирования конкретных представлений.</li><li>Вариант Г. Простое повторение теории без практики; нет связи с реальным применением; отсутствует междисциплинарный подход.</li></ul></ul>'
+  },
+  {
+    id: 'q8', u: 'У3',
+    text: 'В романе «Евгений Онегин» есть строки о том, как Татьяна дышала на стекло и рисовала вензель на отуманенном стекле. Вы спросили учащихся, благодаря какому физическому явлению это возможно, но они не смогли ответить. Как вы решите эту ситуацию?',
+    options: [
+      { letter: 'А', text: 'Объясню явление конденсации. Проведём эксперимент «Конденсация в банке». Обсудим эксперимент и выведем объяснение физического явления, описанного в романе. Для наглядности приведу примеры природных явлений и бытовых ситуаций.' },
+      { letter: 'Б', text: 'Покажу видеоролик «Превращение пара в воду». Обсудим видеоролик и выведем объяснение физического явления. Попрошу учащихся привести свои примеры, объясняемые явлением конденсации.' },
+      { letter: 'В', text: 'Организую дискуссию по теме «Испарение и конденсация в природе и в быту», в рамках которой решим данную ситуационную задачу. Подберу аналогичные примеры для дополнительного разбора.' },
+      { letter: 'Г', text: 'Рекомендую повторить материал по физике «Испарение и конденсат».' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>организует групповую работу и сотрудничество учащихся;</li><li>включает практический эксперимент с реальными измерениями;</li><li>развивает критическое мышление через решение проблемной ситуации;</li><li>интегративный подход: объединяет несколько предметных областей: математику, историю, литературу;</li><li>использует современные технологии (перевод единиц измерения);</li><li>содержит проблемный вопрос, стимулирующий исследовательскую деятельность;</li><li>связь с реальной жизнью (практическое применение измерений).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком теоретический подход, отсутствует практическая деятельность; нет групповой работы; слабая выраженность междисциплинарной интеграции.</li><li>Вариант Б. Отсутствие интеграции предметных областей; нет практической составляющей; пассивная роль учащихся.</li><li>Вариант Г. Хотя включены элементы практики, но отсутствует исследовательский компонент; меньше возможностей для групповой работы; нет проблемного вопроса.</li></ul></ul>'
+  },
+  {
+    id: 'q9', u: 'У3',
+    text: 'На уроке вы прочитали с учащимися отрывок из сказки С.Г. Писахова о штанах «восемнадцативерстовых с пятиверстовым запасом». Между учащимися завязался спор — они долго решали, сколько брюк было сшито. Как вы будете работать с учениками в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Разберу с ребятами решение задачи — объясню, сколько метров входит в версту, и определим количество сшитых брюк. Изучим, какие меры длин использовались в разные исторические периоды.' },
+      { letter: 'Б', text: 'Попрошу учителя математики решить эту задачу с учениками. Либо попрошу детей самостоятельно решить задачу дома.' },
+      { letter: 'В', text: 'Организую обсуждение в группах, как можно определить, сколько брюк было сшито. Решим задачу выбранным учащимися способом. Организую математический эксперимент: измерим рост детей в классе и переведём метры в футы, дюймы, локти и сажени. Поставлю проблемный вопрос: почему люди используют разные меры длин?' },
+      { letter: 'Г', text: 'Организую решение задачи по группам. Для закрепления дам аналогичные задачи с переводом мер длины, используемых в разных странах. Например, определить рост Герасима из «Муму», если его рост — двенадцать вершков. Воспользуемся онлайн-конвертером длин.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>отражен интегративный подход: викторина может включать вопросы из информатики (двоичная система), техники (коды и сигналы), дизайна (цветовые коды HEX), истории (древние системы счисления);</li><li>практическое применение знаний: жизненные ситуации показывают реальную пользу навыка перевода между системами счисления;</li><li>проблемно-ориентированное обучение (решение смоделированных задач);</li><li>активное вовлечение и геймификация: игровые элементы повышают мотивацию, стимулируют командную работу и здоровую конкуренцию;</li><li>креативность: при разработке викторины можно предложить обучающимся самим придумать вопросы для викторины;</li><li>коллективное обсуждение: после викторины обучающиеся самостоятельно формулируют выводы о том, где и зачем нужны разные системы счисления (программирование, электроника, дизайн, архивы, криптография и т. д.), чтозакрепляет мотивацию через осознанное понимание ценности навыка.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Просто задания без игрового элемента; отсутствие интерактивности; неконкретность примеров применения разных систем счисления; отсутствие практической составляющей и междисциплинарной интеграции.</li><li>Вариант В. Сфокусированность только на объяснении работы компьютеров с двоичной системой.</li><li>Вариант Г. Презентация – пассивный формат; хотя примеры из различных профессий полезны, здесь мало самостоятельного исследования, творчества и практического действия.</li></ul></ul>'
+  },
+  // У4 — 3 questions
+  {
+    id: 'q10', u: 'У4',
+    text: 'Во время урока на тему «Системы счисления» у вашего коллеги возникло затруднение. Тема традиционно вызывает у детей вопрос — «Как это пригодится нам в жизни?». Как помочь коллеге мотивировать детей к изучению этой темы?',
+    options: [
+      { letter: 'А', text: 'Посоветую подготовить задания о применении в жизни чисел, представленных в разных системах счисления.' },
+      { letter: 'Б', text: 'Посоветую подготовить геймифицированную викторину на разные способы представления чисел. Вопросы будут описывать жизненные ситуации, в которых приходится применять разные системы счисления. По итогам обобщим, для решения каких практических задач нужно переводить из одной системы в другую.' },
+      { letter: 'В', text: 'Посоветую объяснить, почему компьютеры работают с единицами и нулями.' },
+      { letter: 'Г', text: 'Посоветую подготовить презентацию с жизненными ситуациями, в которых нужно применять разные системы счисления. Обсудим с учениками, зачем системы счисления нужны программисту, электрику, связисту, продавцу.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегративный подход: объединяет несколько предметных областей (географию, экологию, физику, инженерию);</li><li>включает практическую деятельность (разработка схемы граббера);</li><li>отражен исследовательский компонент (изучение течений);</li><li>развивает инженерное мышление и проектирование (проектирование устройства);</li><li>имеет социальную значимость (решение экологической проблемы);</li><li>предполагает создание реального продукта (проект устройства).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком теоретический подход; отсутствует практическая деятельность; нет элементов проектирования; меньше возможностей для вовлечения обучающихся.</li><li>Вариант Б. Ограничивается только схемой и объяснениями; отсутствует практическая составляющая; нет проектной деятельности; меньше возможностей для развития критического мышления.</li><li>Вариант Г. Хотя показывает связь с повседневной жизнью, но не включает техническую составляющую; отсутствует компонент научно-технического творчества; меньше возможностей для междисциплинарной интеграции.</li></ul></ul>'
+  },
+  {
+    id: 'q11', u: 'У4',
+    text: 'Часто говорят, что Цель устойчивого развития № 14 «Сохранение морских экосистем» неактуальна для Беларуси из-за отсутствия моря. Вам необходимо доказать учащимся важность этой Цели и показать междисциплинарный характер проблемы.',
+    options: [
+      { letter: 'А', text: 'Покажете презентацию: Атлантический океан как «кухня» погоды Европы, загрязняя реки — загрязняем моря.' },
+      { letter: 'Б', text: 'На доске составите схему о том, как Мировой океан влияет на погоду и является источником пищи для 2,6 млрд людей. Продемонстрируете обратную сторону: люди загрязняют океаны через реки.' },
+      { letter: 'В', text: 'Попросите учащихся открыть карту мира, будете называть реки, они — говорить, в какое море или океан они впадают. Покажете пять главных течений-круговоротов, где собирается пластик. Попросите учащихся разработать и представить схему океанического граббера для утилизации мусора.' },
+      { letter: 'Г', text: 'Попросите учащихся в течение дня фиксировать употребляемую еду. Проанализируете, какие продукты связаны с промыслом в Мировом океане. Это позволит проследить причинно-следственные связи.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает исследовательский компонент (проверка гипотез);</li><li>организует командную работу (разделение на группы);</li><li>развивает критическое мышление (анализ результатов);</li><li>отражен интегративный подход: объединяет несколько предметных областей (биологию (рост растений), химию (состав почвы), физику (дренаж, влажность));</li><li>предполагает практическую деятельность (эксперименты);</li><li>формирует коммуникативные навыки (презентация результатов).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Хотя включает эксперимент, но фокус только на кислотности, нет междисциплинарного подхода; меньше возможностей для командной работы.</li><li>Вариант Б. Слишком теоретический подход; отсутствует практическая деятельность; нет экспериментальной проверки; меньше возможностей для развития исследовательских навыков.</li><li>Вариант Г. Фокусировка только на одной причине; отсутствует комплексный подход; меньше возможностей для междисциплинарной интеграции; нет этапа выдвижения гипотез.</li></ul></ul>'
+  },
+  {
+    id: 'q12', u: 'У4',
+    text: 'В вашем классе многие учащиеся — фанаты футбола и очень переживают, что на футбольном поле не приживается газон: корни растут параллельно грунту, не проникая в него. Вы решили взять за основу STEAM-урока эту проблемную ситуацию.',
+    options: [
+      { letter: 'А', text: 'В ходе мозгового штурма учащиеся выскажут гипотезы. Коллективно выберут реалистичные предположения. Учащиеся разработают план проверки гипотез и поставят эксперимент: посадят семена в разные по типу кислотности почвы. Каждая команда предъявит результаты исследований.' },
+      { letter: 'Б', text: 'Вы рассказали учащимся, что корни могут расти параллельно, если почва имеет кислую реакцию. Даёте список статей, прочитав которые, учащиеся должны разработать «рецепт» помощи газонному покрытию.' },
+      { letter: 'В', text: 'В ходе мозгового штурма учащиеся выскажут гипотезы. Коллективно выберут реалистичные. Класс разделится на команды, каждая экспериментально проверит своё предположение. Учащиеся соберут материал, подготовят доказательство и презентацию. Вы и коллеги выступите в качестве жюри.' },
+      { letter: 'Г', text: 'Вы рассказали, что на каждом поле есть система дренажа. Попросили учащихся разобраться в системе дренажа и разработать рекомендации по поддержанию его в надлежащем виде.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает командную работу и взаимодействие учащихся;</li><li>включает творческий подход – метод мозгового штурма для генерации идей;</li><li>проблемный подход (выбор значимой проблемы);</li><li>позволяет учащимся самостоятельно выбирать значимые для них проблемы;</li><li>междисциплинарный подход через обсуждение различных идей;</li><li>способствует развитию критического мышления.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Отсутствует элемент коллективной генерации идей; меньше возможностей для творческого подхода нет акцента на междисциплинарности.</li><li>Вариант В. Отсутствует командная работа; меньше возможностей для междисциплинарной интеграции; нет четкой связи с практическим применением.</li><li>Вариант Г. Ограничивается готовыми темами; отсутствует творческая составляющая; меньше возможностей для самостоятельного выбора; не реализуется развитие навыков формулировки проблемы.</li></ul></ul>'
+  },
+  // У5 — 3 questions
+  {
+    id: 'q13', u: 'У5',
+    text: 'В конце полугодия в школе должны состояться защиты проектов. Вы — научный руководитель. Как вы организуете процесс работы над выбором темы проекта?',
+    options: [
+      { letter: 'А', text: 'Предложу учащимся в команде обсудить возможные темы проектов. Организую мозговой штурм, на котором обсудим актуальность и оригинальность идей. На основе озвученных идей учащиеся смогут сформулировать собственную тему, базирующуюся на значимой для них проблеме.' },
+      { letter: 'Б', text: 'Предложу учащимся определить область исследования, на основе которой будет определена тема. После этого учащимся нужно будет выделить ключевую идею (проблему) и сформулировать задачи проекта.' },
+      { letter: 'В', text: 'Предложу учащимся составить свободно-ассоциативное письмо по теме или области знаний, которая будет им предложена, — это поможет выявить возможные пути разработки проекта.' },
+      { letter: 'Г', text: 'Покажу учащимся пример прошлогодней защиты. Представлю своё видение тем и проектов. Они в группах обсудят и выберут из предложенного списка ту тему, которая для них значима.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>реализуется интегративный подход (медицина, дизайн, психология, технологии);</li><li>предполагает командную работу учащихся;</li><li>развивает творчество и критическое мышление через мозговой штурм;</li><li>предполагает практическую реализацию идей (прототипирование);</li><li>включает технологическую составляющую (дизайн-решения);</li><li>отражает социальную значимость (улучшение здоровья населения);</li><li>включает оценивание результатов экспертной комиссией</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком узкий фокус на информационной составляющей; отсутствует исследовательский компонент; меньше возможностей для междисциплинарной интеграции; нет практической реализации идей.</li><li>Вариант В. Сфокусирован только на математическом аспекте; отсутствует творческая составляющая; нет связи с реальным применением; меньше возможностей для развития навыков дизайна.</li><li>Вариант Г. Ограничивается только фактологическим материалом; отсутствует практическая деятельность; нет элементов проектирования; меньше возможностей для развития креативности.</li></ul></ul>'
+  },
+  {
+    id: 'q14', u: 'У5',
+    text: 'Вы предлагаете учащимся побывать в роли врачей, которые придумывают новые способы подтолкнуть людей отказаться от лифта в пользу лестницы — с помощью инструментов активного дизайна. Как вы организуете деятельность учащихся?',
+    options: [
+      { letter: 'А', text: 'Предложите нарисовать информационный плакат «Сжигай калории, а не электричество. Иди по лестнице!», используя цифровые инструменты.' },
+      { letter: 'Б', text: 'Проведёте краткую презентацию об инструментах активного дизайна. На основании этого учащиеся проведут мозговой штурм, выдвигая идеи для подталкивания людей к лестнице. Разработают прототипы информационных плакатов. Вы и коллеги выступите в роли жюри.' },
+      { letter: 'В', text: 'Предложите учащимся математическую задачку: если при подъёме на один этаж сгорает 8 ккал, то при подъёме на 10-й этаж — 80 ккал (столько же, сколько при пробежке 1 км).' },
+      { letter: 'Г', text: 'Сообщите факт: за одну минуту на лестнице человек весом 68 кг сжигает 10 калорий. На доске нарисуете два поля «за» и «против». Учащиеся будут поочерёдно выходить к доске и писать факты в любую из колонок.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее полно соответствует принципам STEAM-образования, так как:</li><li>интегрирует несколько STEAM-блоков (естественные науки (физика электричества), технологии (программирование в Scratch), математика (расчёты потребления), инженерия (принципы работы приборов), экология (энергосбережение);</li><li>развивает практические навыки (алгоритмическое мышление, работа с данными, анализ потребления, моделирование процессов);</li><li>формирует компетенции: системное мышление, проектная деятельность, междисциплинарный подход, решение реальных проблем;</li><li>реализуется исследовательская деятельность (анализ потребления энергии);</li><li>присутствует технологическая составляющая (элементы умного дома);</li><li>учащиеся создают конкретный продукт (разработка онлайн-приложения-калькулятора потребления электроэнергии), имеющий практическую ценность.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Фокусируется только на игровой механике без глубокого анализа; отсутствует математический компонент (нет расчётов потребления); нет связи с естественными науками.</li><li>Вариант В. Слишком упрощён и не требует междисциплинарного подхода; только проверка знаний, а не их применение; отсутствие практической составляющей; нет интеграции с технологиями.</li><li>Вариант Г. Не предполагает создания технологического продукта; пассивное восприятие информации; отсутствие практической деятельности; нет возможности для экспериментирования.</li></ul></ul>'
+  },
+  {
+    id: 'q15', u: 'У5',
+    text: 'Вы решили провести хакатон, используя Scratch для создания приложений «Как экономить энергию в школе». Хакатон разделён на поисковый, технологический и заключительный этапы. Учащимся предложено выбрать формат для пропаганды сохранения электроэнергии. Что они разработают?',
+    options: [
+      { letter: 'А', text: 'Игру в Scratch, в которой выдуманный персонаж перемещается по школе и отключает электроприборы. Кто больше отключит — тот победитель.' },
+      { letter: 'Б', text: 'Онлайн-приложение — калькулятор потребления электроэнергии различными приборами в школе. Приложение подсчитывает наиболее энергозатратные объекты и сигнализирует о нежелательности их длительного использования, что соответствует концепции умного дома.' },
+      { letter: 'В', text: 'Викторину в тестовой форме, где, выбирая ответ, проверяются знания основ энергосбережения. Если итоговая отметка невелика, пользователю сообщается о необходимости повышения осведомлённости.' },
+      { letter: 'Г', text: 'Видеоролик с выдуманным персонажем, который отключает электроприборы по школе. В видеоролике будут заложены ошибки, которые все просматривающие должны найти.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее полно соответствует принципам STEAM-образования, так как:</li><li>интегрирует несколько STEAM-блоков (S (Science)  – исследование реальных демографических трендов; T (Technology)  – использование онлайн‑приложений и цифровых инструментов; E (Engineering)  – построение модели (дерево предсказаний), работа с алгоритмами; A (Art)  – визуализация данных, оформление дерева предсказаний; M (Mathematics)  – расчёты, метод передвижки возрастов, анализ данных);</li><li>предполагает самостоятельное исследование данных;</li><li>включает использование математического метода (передвижка возрастов);</li><li>нацелен на создание визуальной модели (дерево предсказаний);</li><li>аргументацию выводов;</li><li>сравнение с цифровым инструментом (онлайн‑приложением).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Нет интеграции технологий, инженерного мышления, визуализации, исследования; слишком теоретический подход; ограниченное использование данных; отсутствие практической работы с реальными показателями; минимальное применение математического моделирования.</li><li>Вариант Б. Есть технология (поиск информации) и математика, но нет исследования, визуализации, инженерного компонента; фокусируется только на одном методе расчета; ограничивает творческий подход учащихся; не предполагает самостоятельного исследования; меньше возможностей для междисциплинарной интеграции.</li><li>Вариант В. Есть исследование и математика, но нет технологий, инженерного проектирования и междисциплинарности.</li></ul></ul>'
+  },
+  // У6 — 3 questions
+  {
+    id: 'q16', u: 'У6',
+    text: 'Вы решили организовать исследовательскую работу по демографическому прогнозированию. Задача: взять старые данные и спрогнозировать численность населения. Как вы организуете эту работу в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Попросите учащихся изучить математические методы анализа численности населения и дадите материалы по конкретной стране. Учащиеся сделают прогноз и представят результаты классу, который выступит в роли жюри.' },
+      { letter: 'Б', text: 'Попросите учащихся изучить метод передвижки возрастов, найти информацию в интернете. Учащиеся спрогнозируют численность населения на следующее десятилетие и представят результаты классу.' },
+      { letter: 'В', text: 'Предоставите учащимся данные за прошлые годы и попросите попытаться разобраться в них. Учащиеся построят график зависимости численности населения от времени, разработают модель и прокомментируют результаты.' },
+      { letter: 'Г', text: 'Учащиеся исследуют конкретные демографические тренды, используют метод передвижки возрастов, составляют дерево предсказаний (на доске) и аргументируют свои выводы. Сравнивают свои прогнозы с онлайн-приложением.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>реализует проектную деятельность с четкими этапами (распределение ролей, система отслеживания задач, коллективное принятие решений);</li><li>интегрирует несколько STEAM-блоков (литературу (анализ книги), технологию (видеопроизводство), искусство (визуальное оформление), коммуникацию (презентация));</li><li>обеспечивает практическую направленность через создание реального продукта;</li><li>включает командное взаимодействие и распределение ролей;</li><li>включает творческую составляющую (создание буктрейлера);</li><li>развивает критического мышления при анализе книги.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует четкая структура работы; нет системы отслеживания прогресса; меньше возможностей для развития навыков управления проектом.</li><li>Вариант Б. Меньше возможностей для развития навыков управления проектом; менее структурирован.</li><li>Вариант Г. Ограничивает самостоятельность учащихся; меньше возможностей для развития лидерских качеств.</li></ul></ul>'
+  },
+  {
+    id: 'q17', u: 'У6',
+    text: 'Вы решили организовать проектную деятельность по разработке буктрейлеров для книги Д. Пинка «Новый мозг», используя технологию eduScrum. Как вы организуете работу учащихся?',
+    options: [
+      { letter: 'А', text: 'Предложите посмотреть примеры буктрейлеров. Попросите прочитать книгу и написать сценарий. Распределите работу на стикерах. На следующем уроке они представят результат классу.' },
+      { letter: 'Б', text: 'Учащиеся распределяют задачи — двое или трое пишут сценарий и рисуют раскадровку, остальные производят съёмку и монтаж. Задачи распределяет капитан каждой группы, они крепятся на доске. После создания буктрейлера демонстрируют небольшой группе и вносят правки.' },
+      { letter: 'В', text: 'Учащиеся распределяют роли и задачи: кто-то будет scrum-мастером, кто-то — писать сценарий и рисовать раскадровку, остальные — производить съёмку и монтаж. Задачи пишутся на стикерах и перемещаются из «Сделать» в «Сделано». После создания демонстрируют небольшой группе и вносят правки.' },
+      { letter: 'Г', text: 'Предложите посмотреть примеры буктрейлеров, разбиться на команды. Scrum-мастер распределяет задачи на стикерах и следит за их выполнением. По итогу каждая команда представляет буктрейлер классу.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практическую исследовательскую деятельность с реальными экспериментами;</li><li>интегрирует несколько STEAM-блоков (химию (выращивание кристаллов), физику (изучение свойств), технологии (запись таймлапса), математику (анализ результатов), естественные науки (природные явления));</li><li>обеспечивает практическая направленность через исследование искусственных материалов, изучение их применения в промышленности, анализ природных аналогов;</li><li>развитие критического мышления (анализ результатов).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Ограничивается только демонстрацией и обсуждением; отсутствует практическая составляющая; меньше возможностей для исследовательской работы.</li><li>Вариант Б. Хотя включает практическую работу, но фокус только на выращивании, меньше связи с промышленным применением, нет комплексного анализа.</li><li>Вариант В. Сфокусирован только на теоретической презентации; отсутствует практическая деятельность; меньше возможностей для исследовательской работы.</li></ul></ul>'
+  },
+  {
+    id: 'q18', u: 'У6',
+    text: 'Вы решили совместно с учителем физики провести исследовательскую работу «Кристаллическая история» — изучение строения кристаллов и их физических свойств, а также их роли в природе и промышленности.',
+    options: [
+      { letter: 'А', text: 'Начнёте занятие с демонстрации видеороликов о выращивании кристаллов. Проведёте дискуссию о роли природных и искусственных кристаллов в жизни человека. Учащиеся сделают вывод о перспективности кристаллохимии.' },
+      { letter: 'Б', text: 'Учащимся предложите самостоятельно провести исследование и записать таймлапс по выращиванию кристаллов разными способами. Учащиеся представят наблюдения и объяснят различную скорость роста. Подготовят стендовую презентацию по искусственной кристаллохимии.' },
+      { letter: 'В', text: 'Начнёте с демонстрации видеороликов. Проведёте дискуссию об искусственных кристаллах в промышленности для изготовления режущих инструментов, а также об ограненных алмазах в ювелирном деле.' },
+      { letter: 'Г', text: 'Учащимся предложите самостоятельно провести исследование и записать таймлапс по выращиванию кристаллов (поваренная соль, сахар, медный купорос, пищевая сода). Учащиеся исследуют, для чего люди создают искусственные кристаллы с уникальными свойствами. По итогу готовят стендовый доклад о значении кристаллохимии в разных отраслях.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практический эксперимент, позволяющий наглядно продемонстрировать явление</li><li>интегрирует несколько STEAM-блоков (физику (влажность воздуха), химию (свойства соли), естественные науки (метеорология));</li><li>развивает исследовательские навыки через проведение опыта и проверку гипотезы;</li><li>способствует применению знаний на практике;</li><li>стимулирует творческое мышление при создании новых примет;</li><li>предполагает командную работу (совместная разработка новых примет).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Слишком теоретический подход; отсутствует практическая составляющая; меньше возможностей для развития исследовательских навыков.</li><li>Вариант В. Ограничивается работой с текстом; отсутствует практическая деятельность; меньше возможностей для экспериментальной работы.</li><li>Вариант Г. Пассивный подход к получению знаний, отсутствует непосредственное исследование явления. меньше возможностей для развития критического мышления.</li></ul></ul>'
+  },
+  // У7 — 3 questions
+  {
+    id: 'q19', u: 'У7',
+    text: 'Вы провели для учащихся занятие «Народные приметы — правда или ложь?». Ребята не смогли найти научное объяснение примете «Соль мокнет — к дождю». Как вы будете действовать?',
+    options: [
+      { letter: 'А', text: 'Проведу с учащимися опыт, подтверждающий версию: соль сыреет перед дождём, так как начинает впитывать влагу. Придумаем с учащимися приметы, которые базируются на разных физических явлениях.' },
+      { letter: 'Б', text: 'Расскажу ребятам, что перед дождём повышается влажность воздуха. При этом некоторые вещества, например соль, впитывают в себя влагу, следовательно, сыреют.' },
+      { letter: 'В', text: 'Организую работу с текстом, где объясняется, почему соль сыреет перед дождём. Решим аналогичную задачу. Приглашу учителей-коллег в качестве экспертов.' },
+      { letter: 'Г', text: 'Попрошу найти ответ на этот вопрос в интернете и подготовить его к следующему уроку.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегрирует несколько STEAM-блоков (химию (анализ состава снега), математику (расчеты и построение графиков), экологию (оценка влияния на окружающую среду), технологию (проектирование фильтров), биологию (влияние на здоровье));</li><li>включает комплексное исследование с реальными данными (сбор и анализ данных);</li><li>обеспечивает практическую направленность через сбор реальных данных, проведение экспериментов, разработку технологических решений;</li><li>включает технологическую составляющую (разработка прототипов фильтров);</li><li>отражает социальную значимость (решение экологической проблемы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Начинается с готового материала; меньше возможностей для самостоятельного исследования; отсутствует этап проектирования.</li><li>Вариант Б. Не включает этап проектирования технических решений; меньше возможностей для развития инженерного мышления.</li><li>Вариант В. Ограничивается только экспериментом; отсутствует математическая обработка данных; нет этапа проектирования.</li></ul></ul>'
+  },
+  {
+    id: 'q20', u: 'У7',
+    text: 'Вы решили провести интегрированный урок «Влияние добычи и переработки полезных ископаемых на окружающую среду» с коллегами — учителями химии и математики. Как вы организуете урок?',
+    options: [
+      { letter: 'А', text: 'Начнёте с изучения материала о добыче полезных ископаемых. Предложите изучить материалы о содержании примесей в снеге возле ТЭС. Учащиеся построят гистограмму и под руководством учителя математики её проанализируют. Разработают рекомендации по снижению выбросов.' },
+      { letter: 'Б', text: 'Предварительно попросите учащихся взять образцы снега в районах их проживания. Учащиеся проведут эксперимент по фильтрации. Решат задачи на определение массы продукта реакции. Результаты отразят графически и представят выводы. Разработают рекомендации.' },
+      { letter: 'В', text: 'Предварительно попросите взять образцы снега. После эксперимента с фильтровальной бумагой учащиеся увидят примеси, которые могут поступать в организм человека. Разработают рекомендации по снижению выбросов.' },
+      { letter: 'Г', text: 'Предварительно попросите взять образцы снега. Учащиеся проведут эксперимент по фильтрации и определению массы фильтрата. Решат задачи на определение массы продукта реакции. Результаты отразят графически. Разработают прототипы фильтров и рекомендации по снижению выбросов.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает исследовательский компонент через прогнозирование;</li><li>интегрирует несколько STEAM-блоков (биологию (размножение бактерий), математику (графическое прогнозирование), физику (циркуляция воздуха), технологии (методы контроля);</li><li>обеспечивает практическую значимость через работу с реальными данными, построение прогнозов, анализ результатов;</li><li>включает математическое моделирование (графический способ);</li><li>обеспечивает развитие критического мышления (анализ данных)</li><li>включает техническую составляющую (работа с данными).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком теоретический подход; отсутствует практическая деятельность; нет исследовательского компонента.</li><li>Вариант Б. Хотя включает работу с данными, но меньше возможностей для прогнозирования, отсутствует математическая составляющая, меньше развития критического мышления.</li><li>Вариант Г. Повторяет структуру варианта А; отсутствует исследовательская деятельность; меньше возможностей для междисциплинарной интеграции.</li></ul></ul>'
+  },
+  {
+    id: 'q21', u: 'У7',
+    text: 'На перемене вы попросили проветрить кабинет, но учащиеся возразили, что не видят необходимости в проветривании. Вы решили организовать STEAM-урок по демонстрации необходимости проветривания помещений с целью снижения количества бактерий.',
+    options: [
+      { letter: 'А', text: 'В начале урока сообщите, что чистота воздуха в норме. На доске запишете пути поступления микроорганизмов в воздух кабинета. Учащиеся придут к выводу, что необходимо проветривать.' },
+      { letter: 'Б', text: 'Сообщите, что в кабинете 3690 единиц микроорганизмов на 1 куб. м. Предложите найти нормативные документы по нормированию воздуха. Учащиеся убедятся в необходимости проветривания и составят перечень мер.' },
+      { letter: 'В', text: 'Сообщите, что в кабинете 3690 единиц микроорганизмов на 1 куб. м. Попросите сделать прогноз: сколько бактерий будет к концу дня, если не проветривать. Учащиеся используют графический способ прогнозирования на основании последовательности размножения бактерий. Сравнят показатель с нормой.' },
+      { letter: 'Г', text: 'Сообщите, что чистота воздуха в норме. На доске запишете пути поступления микроорганизмов. Учащиеся придут к выводу о необходимости проветривания. Составят перечень мер по предотвращению загрязнения воздуха.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практический эксперимент с использованием научного оборудования</li><li>интегрирует несколько STEAM-блоков (химию (анализ состава), биологию (влияние на организм), технологию (работа с рефрактометром), математику (анализ данных));</li><li>интеграцию теории и практики (от анализа состава к пониманию рекламы);</li><li>обеспечивает развитие критического мышления через проверку информации, анализ состава продуктов, оценку рекламных заявлений;</li><li>включает технологическую составляющую (работа с рефрактометром);</li><li>отражает социальную значимость (защита прав потребителей).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Ограничивается только групповой дискуссией; отсутствует практическая проверка; меньше возможностей для развития исследовательских навыков.</li><li>Вариант В. Сфокусирован только на поиске информации; отсутствует экспериментальная проверка; меньше возможностей для развития практических навыков.</li><li>Вариант Г. Основан на чужих мнениях; отсутствует самостоятельная проверка фактов; меньше возможностей для развития исследовательских компетенций.</li></ul></ul>'
+  },
+  // У8 — 3 questions
+  {
+    id: 'q22', u: 'У8',
+    text: 'Учащиеся хотели купить сок «без сахара», но продавец в буфете им ответил, что такого сока не существует. Учащиеся обратились к вам. Как вы научите детей поиску научной информации и оценке научных аргументов?',
+    options: [
+      { letter: 'А', text: 'Проведу совместно с учащимися эксперимент с использованием рефрактометра, который позволяет определить наличие сахара в соке. Внимательно изучим состав на упаковке, чтобы узнать, используют ли производители рекламные манипуляции. Сравним несколько упаковок.' },
+      { letter: 'Б', text: 'Организую работу в группах — учащиеся обсудят вопрос «Сок без сахара — миф или правда?». При подведении итогов приведу мнение эксперта и покажу познавательное видео.' },
+      { letter: 'В', text: 'Дам задание на дом: найти в интернете, книгах или журналах информацию по этому вопросу. Учащиеся подготовят презентации.' },
+      { letter: 'Г', text: 'Организую на уроке беседу и буду обращаться к мнению экспертов и к рекламе. Дам детям критерии, по которым нужно оценивать информацию. Изучим состав на коробках из-под сока.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает практический экспериментальный компонент с реальными исследованиями;</li><li>интегрирует несколько STEAM-блоков (химию (изучение состава и свойств веществ), биологию (влияние на организм), технологию (сравнение с бытовой химией), математику (анализ результатов));</li><li>обеспечивает комплексный подход через изучение состава напитков, проведение экспериментов, сравнение с бытовой химией, анализ влияния на организм;</li><li>включает сравнительный анализ (сравнение с бытовой химией)</li><li>развитие критического мышления (анализ мифов);</li><li>отражает социальную значимость (понимание влияния на здоровье).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Ограничивается только теоретическим анализом; отсутствует практическая проверка; меньше возможностей для развития исследовательских навыков.</li><li>Вариант Б. Хотя включает эксперименты, но не сравнивает с бытовой химией, меньше системного анализа, отсутствует комплексный подход к изучению влияния на организм.</li><li>Вариант В. Сфокусирован на составлении списков и анализе этикеток; отсутствует практическая экспериментальная часть; меньше возможностей для развития исследовательских компетенций.</li></ul></ul>'
+  },
+  {
+    id: 'q23', u: 'У8',
+    text: 'Вы решили провести небольшое исследование, чтобы продемонстрировать вред газированных напитков и объяснить, почему люди не погибают, поглощая большие количества кока-колы. Как вы организуете интегрированный урок по биологии и химии?',
+    options: [
+      { letter: 'А', text: 'Начнёте с изучения компонентного состава напитков на этикетке. Учащиеся убедятся, что активным компонентом выступает ортофосфорная кислота. Изучат её основные свойства и применение. Составят логико-смысловую модель.' },
+      { letter: 'Б', text: 'Начнёте с изучения состава. Предложите провести дома и задокументировать эксперименты: растворение биологических соединений кока-колой, удаление маркера, известкового налёта. Учащиеся ответят, мифы это или нет. Затем поставите проблемный вопрос: как организм человека справляется с такой нагрузкой?' },
+      { letter: 'В', text: 'Начнёте с изучения состава. Учащиеся изучат также этикетки средств бытовой химии. Составят список применений ортофосфорной кислоты. Внизу поместят вопрос о её влиянии на организм.' },
+      { letter: 'Г', text: 'Начнёте с изучения состава. Учащиеся изучат этикетки средств бытовой химии. Проведут дома эксперименты: растворение биологических соединений и эффективность в удалении известкового налёта по сравнению с бытовой химией. Учащиеся представят результаты и ответят, мифы это или нет.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает практическую направленность через создание прототипа;</li><li>позволяет экспериментальную проверку работоспособности;</li><li>даёт свободу в выборе материалов и решений;</li><li>фокусируется на инженерном мышлении и изобретательстве;</li><li>отражает социальную значимость (понимание влияния на здоровье).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком жёсткие ограничения (обязательное использование всех материалов); нет возможности для творческого подхода; меньше свободы в поиске решений.</li><li>Вариант Б. Наличие готовой схемы снижает исследовательский потенциал; ограничивает креативность; меньше возможностей для самостоятельного поиска решений.</li><li>Вариант Г. Хотя предлагает свободу в выборе материалов, но акцент на чертежах может отвлечь от практической реализации; больше времени может уйти на документацию, чем на создание прототипа.</li></ul></ul>'
+  },
+  {
+    id: 'q24', u: 'У8',
+    text: 'При изучении атмосферных осадков вы поставили проблемный вопрос о рационализаторстве: «Как заставить окно само закрываться, когда начнётся дождь?» (чем проще решение, тем выше ценится). Как вы организуете работу?',
+    options: [
+      { letter: 'А', text: 'Предложите конкретный набор материалов (моток верёвки, блок-ролик, электродвигатель, ёмкость для воды, соль, провода). Скажете, что учащиеся обязательно должны использовать все предложенные материалы. Нарисуют подробный чертёж.' },
+      { letter: 'Б', text: 'Предложите набор материалов. Скажете, что учащиеся должны использовать минимум предложенных материалов. В случае затруднения предложите схему по сборке.' },
+      { letter: 'В', text: 'Предложите набор материалов. Скажете, что они могут использовать только те материалы, которые предложены. Учащиеся разрабатывают прототип устройства до тех пор, пока не докажут его работоспособность.' },
+      { letter: 'Г', text: 'Предложите набор материалов, в котором есть необязательные элементы. Учащиеся должны нарисовать подробный чертёж устройства.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>использует современные цифровые технологии (Canva) для создания инфографики;</li><li>включает практическую деятельность через игру «верю – не верю», анализ информации;</li><li>развивает критическое мышление через анализ информации;</li><li>формирует навыки распознавания манипуляций;</li><li>реализует командное взаимодействие в игре;</li><li>включает творческий подход к решению задачи и практическую значимость (навыки распознавания фейков).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Ограничивается только списком тезисов; использует устаревший инструмент (Power Point); меньше возможностей для визуализации; отсутствует игровая составляющая</li><li>Вариант В. Основан на готовых материалах; отсутствует создание собственного продукта; меньше возможностей для развития критического мышления; нет использования современных инструментов.</li><li>Вариант Г. Слишком фокусируется на готовых критериях; меньше возможностей для самостоятельного анализа; отсутствует элемент игры и взаимодействия; меньше возможностей для развития креативности.</li></ul></ul>'
+  },
+  // У9 — 3 questions
+  {
+    id: 'q25', u: 'У9',
+    text: 'Вам необходимо разработать инфографику для занятия «Не дадим себя обмануть» по формированию критического мышления. Инфографика нацелена на визуальные якоря для запоминания, какая информация научная, а какая — популярная. Что вы включите?',
+    options: [
+      { letter: 'А', text: 'Придумаю инфографику о новейших изобретениях: настоящих и «утках». Буду использовать Canva. На уроке проведу игру «Верю — не верю»: учащиеся будут оценивать информацию, чтобы научиться распознавать манипуляции и научность источников. Составим список приёмов по распознаванию ложной информации.' },
+      { letter: 'Б', text: 'Составлю список тезисов. Предложу учащимся созданную мной в PowerPoint инфографику и попрошу проанализировать список, выявить и добавить недостающую информацию.' },
+      { letter: 'В', text: 'Буду показывать инфографику, найденную в интернете. Организую беседу — в процессе буду обращаться к мнению экспертов и к рекламе. Попрошу разработать рекомендации по распознаванию ложной информации.' },
+      { letter: 'Г', text: 'Предложу учащимся инфографику, созданную мной с помощью графического редактора, и дам критерии оценки информации. Попрошу подобрать материалы, демонстрирующие различные источники знания.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает исследовательский подход через самостоятельное проектирование, экспериментальную проверку. анализ данных, улучшение прототипа;</li><li>включает современные технологии через использование цифровой лаборатории;</li><li>интегрирует несколько STEAM-блоков (экологию (загрязнение воды), химию (анализ ph), физику (методы очистки), технологию (проектирование устройств), математику (анализ графиков));</li><li>отражает практическую направленность (решение реальной проблемы);</li><li>включает технологическую составляющую (улучшение прототипа);</li><li>предполагает командную работу (работа в группах);</li><li>отражает социальную значимость (решение экологической проблемы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует использование современного оборудования; меньше возможностей для анализа данных; нет этапа улучшения прототипа.</li><li>Вариант В. Слишком большой акцент на изучение готовых методов; меньше возможностей для творческого подхода; ограниченный анализ результатов.</li><li>Вариант Г. Отсутствует использование современного оборудования; меньше возможностей для глубокого анализа; нет этапа сравнения с существующими решениями.</li></ul></ul>'
+  },
+  {
+    id: 'q26', u: 'У9',
+    text: 'Вы решили включить исследовательский элемент в изучение загрязнения гидросферы. Разделили класс на команды, выдали им «загрязнённую» воду и предложили разработать план очистки. Проблема — ликвидация нефти в открытом море. Как вы организуете работу?',
+    options: [
+      { letter: 'А', text: 'Команды изучают методы очистки воды от нефти и выбирают подходящий вариант. Используя подручные средства, апробируют выбранный метод. В финале представят прототип и схему по очистке. С помощью индикационных полосок проверят pH воды.' },
+      { letter: 'Б', text: 'Команды, используя подручные средства, создают устройства по очистке воды. Представят прототип другим участникам. С помощью цифровой лаборатории демонстрируют графики изменения pH в зависимости от метода очистки. Вы демонстрируете презентацию о существующих методах, сравниваете с прототипом учащихся. Учащиеся улучшают свой прототип.' },
+      { letter: 'В', text: 'Команды изучают презентационные материалы о существующих методах очистки. Используя подручные средства, апробируют методы и пытаются их улучшить. В финале представят прототип и схему. Проверят pH воды индикационными полосками.' },
+      { letter: 'Г', text: 'Команды выбирают один вариант очистки, апробируют его и пытаются улучшить. Представят прототип и схему. Проверят pH воды. По итогам будет определён лучший метод очистки.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегрирует несколько STEAM-блоков (объединение экологии, математики, географии, технологий);</li><li>включает технологическую составляющую (использование ГИС-систем);</li><li>обеспечивает комплексный анализ данных с учетом метеорологических факторов (пространственный анализ);</li><li>включает математическое моделирование (интерполяция данных);</li><li>позволяет создать визуализацию результатов в виде карт ареалов;</li><li>учитывает реальные факторы (циркуляция атмосферы);</li><li>отражает практическую значимость (решение реальной проблемы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Ограничивается только построением простых диаграмм; не учитывает пространственный анализ; меньше возможностей для визуализации; отсутствует использование современных технологий.</li><li>Вариант В. Хотя использует ГИС, но игнорирует важный фактор циркуляции атмосферы; меньше глубины анализа; отсутствует учет дополнительных параметров.</li><li>Вариант Г. Сфокусирован только на построении диаграмм; не использует современные инструменты визуализации; меньше возможностей для пространственного анализа; отсутствует учет метеорологических факторов.</li></ul></ul>'
+  },
+  {
+    id: 'q27', u: 'У9',
+    text: 'При изучении темы загрязнения атмосферного воздуха вы хотите показать методы визуализации данных мониторинга. Вы предоставили учащимся фрагмент карты города с точками газового анализа. Как лучше визуализировать данные?',
+    options: [
+      { letter: 'А', text: 'Предоставите показатели содержания CO₂, H₂S, SO₂ в разных частях города. Учащиеся построят столбчатые диаграммы для каждой точки исследования и проанализируют превышения ПДК.' },
+      { letter: 'Б', text: 'Для демонстрации автоматизации с помощью современных ГИС воспользуетесь ПО для интерполяции данных о содержании CO₂, H₂S, SO₂ и составления карты ареалов. Карты позволяют выявить очаги загрязнения с учётом местной циркуляции атмосферы.' },
+      { letter: 'В', text: 'Воспользуетесь ПО для интерполяции данных и составления карты ареалов. Подчеркнёте, что такие карты позволяют выявить очаги загрязнения.' },
+      { letter: 'Г', text: 'Предоставите показатели газов. Учащиеся построят столбчатые диаграммы, проанализируют превышения ПДК с учётом розы ветров за определённый промежуток времени.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает полную проектную методологию от идеи до реализации (исследование проблемы («Смотрим»), генерация идей («Думаем»), практическая реализация («Делаем»), тестирование и доработка, презентация результатов);</li><li>обеспечивает глубокое погружение в проблему через изучение особенностей кормления, анализ существующих решений, создание рабочего прототипа;</li><li>отражает практическая направленность (создание рабочего прототипа);</li><li>интегрирует несколько STEAM-блоков (биология + технологии);</li><li>отражает социальную значимость (решение реальной проблемы);</li><li>отражает технологическую составляющую (создание прототипа);</li><li>предполагает командную работу (презентация классу);</li><li>развивает критическое мышление (анализ существующих решений).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Хотя включает важные этапы, но не предусматривает итеративную работу до получения рабочего решения; меньше акцента на практическую реализацию.</li><li>Вариант Б. Слишком общая структура; отсутствует конкретизация этапов; нет упоминания о доработке прототипа.</li><li>Вариант В. Зависимость от помощи учителя при неудачах; меньше самостоятельности в решении проблем; нет четкой цели создания рабочего решения.</li></ul></ul>'
+  },
+  // У10, У11, У12, У13, У14, У15 — 1 question each
+  {
+    id: 'q28', u: 'У10',
+    text: 'Вы знаете, что не бывает больших и маленьких проблем. Вы предложили учащимся решить проблему: «Как организовать оставшимся дома котам постоянно свежую воду и корм во время отпуска?». Какие этапы проектирования необходимо пройти?',
+    options: [
+      { letter: 'А', text: 'Этап «Смотрим» (проблемный вопрос) → «Думаем» (изучение особенностей кормления котов, изучение существующих приспособлений) → «Делаем» (прототипирование и тестирование) → Презентация результатов.' },
+      { letter: 'Б', text: 'Этап «Смотрим» (проблема) → «Думаем» (генерация идей) → «Делаем» (прототипирование и тестирование) → Публичное представление результатов.' },
+      { letter: 'В', text: 'Этап «Смотрим» → «Думаем» (генерация идей, предложение решений) → «Делаем» (прототипирование и тестирование). Если прототип нерабочий — учащиеся обращаются к учителю.' },
+      { letter: 'Г', text: 'Этап «Смотрим» (мозговой штурм) → «Думаем» (изучение особенностей кормления, изучение существующих аналогов) → «Делаем» (прототипирование и тестирование). Учащиеся работают над прототипом, пока результат не будет рабочим. Презентуют результаты классу, который выполнит роль жюри.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает полный цикл проектирования (от идеи до реализации (исследование существующих решений, генерация идей, прототипирование, тестирование, доработка до рабочего состояния);</li><li>включает практическую направленность через работу с реальными материалами, создание функционального продукта, решение конкретной задачи</li><li>развивает инженерное мышление (проектирование и создание прототипа);</li><li>включает исследовательская деятельность (изучение аналогов);</li><li>включает технологическую составляющую (работа с материалами);</li><li>развивает критическое мышление (анализ существующих решений).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует этап исследования существующих решений; нет системы доработок; меньше структурированности в процессе.</li><li>Вариант Б. Ограничивается одним голосованием для выбора идеи; отсутствует этап улучшения прототипа; меньше глубины в проектировании.</li><li>Вариант В. Хотя включает исследование, но нет акцента на многократном тестировании, отсутствует этап доработок, меньше возможностей для итераций.</li></ul></ul>'
+  },
+  {
+    id: 'q29', u: 'У11',
+    text: 'Вам необходимо провести межпредметный лабораторный эксперимент «Действие ферментов слюны на крахмал» в логике STEAM, чтобы учащиеся глубже поняли процесс гидролиза углеводов при пищеварении.',
+    options: [
+      { letter: 'А', text: 'Разработаю содержание лабораторного эксперимента и опишу алгоритм его проведения. Раздам алгоритм учащимся. Они выполнят работу и запишут самостоятельно сформулированные выводы в тетради.' },
+      { letter: 'Б', text: 'Раздам учащимся по небольшому кусочку хлеба, попрошу долго пережёвывать его и описать ощущения. Далее раздам рабочие листы с алгоритмом выполнения работы.' },
+      { letter: 'В', text: 'Разработаю пошаговую карту-инструкцию к лабораторному эксперименту для учащихся. Они выполнят работу и запишут выводы в тетради.' },
+      { letter: 'Г', text: 'Сформулируем гипотезу по решению проблемного вопроса. Проведём лабораторный эксперимент, подтверждающий гипотезу. После наблюдения предложу учащимся создать постер «Я делюсь результатами своего эксперимента».' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает полный цикл проектирования (исследование проблемы, генерация идей, создание собственного дизайна, практическая реализация, тестирование, оценка результата);</li><li>интегрирует несколько STEAM-блоков (биологию (поведение птиц), физику (движение в воздухе), искусство (дизайн мобиля), технологию (создание конструкции), математику (баланс и пропорции));</li><li>отражает практическую направленность (решение реальной проблемы);</li><li>включает творческую составляющую (собственный дизайн);</li><li>развивает критическое мышление (оценка эффективности);</li><li>предполагается командная работа (работа в группах и оценка).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует практическое тестирование; нет этапа создания собственного дизайна; ограничивается только голосованием.</li><li>Вариант Б. Хотя включает тестирование, но нет этапа создания собственного дизайна, отсутствует оценка эстетической составляющей, меньше возможностей для творчества.</li><li>Вариант В. Хотя включает тестирование и оценку, но нет создания собственного уникального дизайна, меньше возможностей для креативности.</li></ul></ul>'
+  },
+  {
+    id: 'q30', u: 'У12',
+    text: 'В магазинах всё чаще предлагают биоразлагаемые пакеты. Вы решили провести с учащимися эксперимент: подтвердить или опровергнуть разлагаемость пакетов. Для этого предложили учащимся создать мини-компостные ямы. Как вы организуете самостоятельную работу?',
+    options: [
+      { letter: 'А', text: 'Дадите задание на пришкольном участке выкопать ямы, заполнить разные типы биоразлагаемых пакетов очистками и закопать их на полгода. Спустя полгода проверить состояние пакетов и сделать выводы.' },
+      { letter: 'Б', text: 'Дадите задание взять разные типы пакетов, наполнить их отходами и поместить всё в пластиковую бутылку с грунтом. Учащиеся раз в неделю добавляют воду и в дневнике еженедельно фиксируют любые изменения. Спустя полгода проверить состояние пакетов, сравнить и сделать выводы.' },
+      { letter: 'В', text: 'Дадите задание на пришкольном участке выкопать ямы, заполнить разные типы биоразлагаемых пакетов с разными наполнителями (очистками, опавшими листьями). Спустя полгода проверить состояние пакетов.' },
+      { letter: 'Г', text: 'Дадите задание выкопать ямы, заполнить пакеты очистками и закопать на полгода. Поручите еженедельно добавлять воду и сверху прикрыть ямы опавшими листьями. Спустя полгода сравнить и сделать выводы.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>интегрирует несколько STEAM-блоков (биология + химия + технологии);</li><li>включает исследовательский подход через формулировку и проверку гипотезы;</li><li>обеспечивает целостное понимание процесса через: постановку проблемы, планирование эксперимента, сбор данных, анализ результатов, представление выводов;</li><li>развивает навыки коммуникации через создание постера;</li><li>отражает практическую направленность (реальный эксперимент);</li><li>развитие критического мышления (формулировка гипотезы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком директивный подход; отсутствует этап формулировки гипотезы; меньше возможностей для развития исследовательских навыков.</li><li>Вариант Б. Хотя включает практический опыт, но недостаточно структурирован, нет системного подхода к исследованию, меньше возможностей для глубокого анализа.</li><li>Вариант В. Сфокусирован только на выполнении инструкции, отсутствует этап формулировки гипотезы, меньше возможностей для развития критического мышления.</li></ul></ul>'
+  }
+];
+
+// Additional questions for У10 (q34,q35), У11 (q36,q37), У12 (q38,q39), У13 (q31,q40,q41), У14 (q32,q42,q43), У15 (q33,q44,q45)
+const extraQuestions = [
+  // У10 — ещё 2 задания
+  {
+    id: 'q34', u: 'У10',
+    text: 'Вы работаете с учащимися в технике стоп-моушн: создаёте короткие видеоролики на тему «Элементы в организме человека». Для успешной работы нужна подставка для мобильного телефона. Учащиеся могут использовать предложенные материалы (не обязательно все). Выберите вариант, где наиболее точно описан процесс проектирования.',
+    options: [
+      { letter: 'А', text: 'Учащиеся рассматривают материалы и сразу начинают создавать подставку. Когда прототип готов, они его тестируют. Если прототип нерабочий — учащиеся исправляют и снова тестируют.' },
+      { letter: 'Б', text: 'Учащиеся рассматривают материалы, генерируют идеи, голосованием выбирают лучшую идею. Реализуют идею, тестируют прототип. Если прототип нерабочий — учащиеся исправляют и снова тестируют.' },
+      { letter: 'В', text: 'Учащиеся изучают существующие решения, затем рассматривают материалы и генерируют идеи. Реализуют идею, тестируют прототип. Если прототип нерабочий — учащиеся исправляют и снова тестируют.' },
+      { letter: 'Г', text: 'Учащиеся изучают существующие аналоги и рассматривают материалы. Генерируют идеи и выбирают лучшую. Создают прототип и тестируют его. Дорабатывают до рабочего состояния. Представляют результат классу.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает исследовательский компонент через мозговой штурм, практическое создание устройства, сравнительный анализ;</li><li>интегрирует несколько областей знания (физику (магнитное поле), технологию (сборку устройства), информатику (сравнение со смартфоном), математику (анализ показаний));</li><li>обеспечивает практическую направленность через решение реальной проблемы, работу с реальными материалами, сравнение разных типов компасов;</li><li>развивает навыки сравнительного анализа (разные типы компасов);</li><li>отражена социальная значимость (выживание в экстремальных условиях);</li><li>развивает системное мышление (понимание работы разных устройств).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует этап самостоятельного поиска решения, меньше возможностей для развития критического мышления.</li><li>Вариант В. Зависимость от готовых решений в интернете; меньше возможностей для творческого подхода; меньше акцента на понимании принципов работы.</li><li>Вариант Г. Хотя включает исторический контекст, но меньше акцента на практическом сравнении, отсутствует анализ современных технологий, меньше возможностей для глубокого анализа.</li></ul></ul>'
+  },
+  {
+    id: 'q35', u: 'У10',
+    text: 'Вы рассказали на уроке детям, что инженеры и дизайнеры разрабатывают способы защиты зданий от птиц. Птицы могут создавать гнёзда, оставлять следы, повреждать конструкции. Вы предлагаете учащимся спроектировать «мобиль» — подвесную конструкцию для отпугивания птиц. Какой подход соответствует логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Учащиеся проводят мозговой штурм, определяют объекты для отпугивания птиц и голосованием выбирают лучшие. Рисуют эскиз, сдают на проверку.' },
+      { letter: 'Б', text: 'Учащиеся проводят мозговой штурм, создают из материалов мобиль и тестируют его. Тот, чей мобиль дольше всего движется на ветру, побеждает.' },
+      { letter: 'В', text: 'Учащиеся проводят мозговой штурм, создают мобиль. Он должен двигаться на ветру и издавать звук. Тестируют и оценивают по критериям: движение, звук, внешний вид.' },
+      { letter: 'Г', text: 'Учащиеся проводят мозговой штурм, изучают поведение птиц, разрабатывают собственный дизайн мобиля. Создают и тестируют прототип. Оценивают по эффективности и эстетическим критериям. Класс выступает жюри.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает комплексный подход через демонстрацию физической модели, работу с цифровыми данными, полевой эксперимент, разработку практических решений;</li><li>интегрирует несколько областей знания (географию (картография), экологию (влияние факторов), математику (измерения), технологии (работа с аэрофотоснимками), инженерию (разработка рекомендаций));</li><li>отражена исследовательская деятельность (полевой эксперимент) и практическая направленность (реальное картирование);</li><li>развитие критического мышления (разработка рекомендаций);</li><li>включает технологическую составляющую (работа с цифровыми данными);</li><li>отражена социальная значимость (решение экологической проблемы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует работа с цифровыми данными; меньше структурированности в полевой части; нет упоминания о практическом эксперименте.</li><li>Вариант В. Слишком упрощенный подход; отсутствует комплексный анализ проблемы; меньше возможностей для междисциплинарной интеграции.</li><li>Вариант Г. Сфокусирован только на гидротехнических решениях; меньше охвата различных аспектов проблемы; отсутствует работа с современными технологиями.</li></ul></ul>'
+  },
+  // У11 — ещё 2 задания
+  {
+    id: 'q36', u: 'У11',
+    text: 'Вы моделируете ситуацию: учащиеся заблудились в лесу во время похода, GPS не работает, нет ориентиров. Им нужно определить стороны света. Предметы: иголка, кусок металлической проволоки, кусок магнита, листок бумаги, ёмкость с водой, кусок пластика. Как вы организуете работу в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Попрошу учащихся вспомнить принцип работы компаса. Разработаю рабочий лист с пошаговым алгоритмом сборки. Учащиеся соберут компас по инструкции и определят стороны света.' },
+      { letter: 'Б', text: 'Попрошу вспомнить принцип работы компаса. Проведу мозговой штурм: как соорудить компас из предметов? Учащиеся создают компас, сравнивают с компасом на смартфоне и с промышленным компасом. Обсуждаем различия.' },
+      { letter: 'В', text: 'Учащиеся свободно берут предметы, находят в интернете способ сборки компаса и собирают. Тот, чей компас работает точнее, побеждает.' },
+      { letter: 'Г', text: 'Рассказываю об истории изобретения компаса. Провожу мозговой штурм, учащиеся предлагают варианты. Собирают компас, проверяют точность, делают вывод о принципах работы.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает системный анализ проблемы через выявление причинно-следственных связей, междисциплинарный подход, комплексный взгляд на проблему;</li><li>включает практическую направленность через поиск технологических решений, использование современных достижений науки, разработку конкретных предложений;</li><li>реализуется междисциплинарный подход (экология + экономика + социология);</li><li>развивает системный анализ (выявление связей между компонентами);</li><li>включает исследовательскую деятельность (поиск решений);</li><li>отражает практическую направленность (разработка конкретных предложений) и социальную значимость (решение реальной проблемы);</li><li>предполагает командную работу (мозговой штурм);</li><li>предполагает визуализацию данных (схема взаимосвязей);</li><li>развивает критическое мышление (анализ причинно-следственных связей).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует анализ взаимосвязей; нет этапа поиска решений; меньше глубины в анализе проблемы.</li><li>Вариант В. Хотя включает поиск решений, но отсутствует анализ взаимосвязей, меньше возможностей для глубокого анализа, нет акцента на современных технологиях.</li><li>Вариант Г. Хотя включает анализ связей, но отсутствует этап поиска решений, меньше практической направленности, нет акцента на современных технологиях.</li></ul></ul>'
+  },
+  {
+    id: 'q37', u: 'У11',
+    text: 'На уроках по естественно-научным предметам вы постоянно используете физические модели — макеты. Вы решили на конкретном примере показать учащимся, как изучают овраги. Какой подход соответствует логике STEAM?',
+    options: [
+      { letter: 'А', text: 'На модели демонстрируете, как вода и ветер способствуют росту оврагов. Предлагаете учащимся изучить направления борьбы с оврагами. Задание на лето: измерить размеры оврагов вблизи дома.' },
+      { letter: 'Б', text: 'На модели демонстрируете рост оврагов. Показываете цифровые аэрофотоснимки. Предлагаете учащимся летом провести полевой эксперимент: измерить, нанести на карту, разработать рекомендации по защите.' },
+      { letter: 'В', text: 'На модели демонстрируете рост оврагов. Задание на лето: измерить длину, ширину и глубину оврагов.' },
+      { letter: 'Г', text: 'На модели демонстрируете рост оврагов. Предлагаете изучить гидротехнические направления борьбы. Задание на лето: измерить овраги и разработать меры по предотвращению дальнейшего роста.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает контролируемые условия эксперимента через стандартизированные контейнеры (пластиковые бутылки), регулярный мониторинг, систематические записи, фиксированные условия</li><li>включает научный метод исследования (постановку гипотезы, сбор данных, анализ результатов, формулировку выводов);</li><li>предполагает командную работу (совместное проведение эксперимента)</li><li>развитие критического мышления (проверка гипотезы)</li><li>отражает практическую направленность (решение реальной проблемы)</li><li>включает технологическую составляющую (создание экспериментальной установки).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Отсутствует систематический сбор данных; нет контроля условий эксперимента; меньше возможностей для наблюдения.</li><li>Вариант В. Разные наполнители могут исказить результаты; Отсутствует регулярный мониторинг; Нет стандартизации условий.</li><li>Вариант Г. Хотя включает некоторые элементы контроля, но условия менее стандартизированы, меньше возможностей для регулярного наблюдения, нет систематической фиксации данных.</li></ul></ul>'
+  },
+  // У12 — ещё 1 задание (итого 3)
+  {
+    id: 'q38', u: 'У12',
+    text: 'Изучая страны Латинской Америки, вы анализируете с учащимися проблему фавел (трущоб) в Бразилии. На доске нарисованы блоки: «Атмосфера», «Гидросфера», «Литосфера», «Биосфера», «Экономика», «Общество». Как организовать работу в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Попрошу учащихся написать в блоках негативные последствия фавел. По итогам обсудим и сформулируем выводы.' },
+      { letter: 'Б', text: 'По итогам мозгового штурма учащиеся заполняют блоки негативными последствиями и стрелками обозначают связи между блоками. Ищут технологические решения для каждого блока.' },
+      { letter: 'В', text: 'Учащиеся заполняют блоки и ищут решения для каждого. Но связи между блоками не обозначают.' },
+      { letter: 'Г', text: 'Учащиеся заполняют блоки, обозначают связи. Но этапа поиска практических решений нет — только анализ причинно-следственных связей.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает комплексный подход через практическое экспериментирование; работу с микроскопом; изучение физических принципов; междисциплинарный анализ;</li><li>интегрирует несколько областей знания (биологию (поглощение веществ растениями), химию (работа с красителями), физику (принципы фильтрации), технологию (создание фильтра));</li><li>включает исследовательскую деятельность (проведение эксперимента);</li><li>отражает практическую направленность (работа с реальными материалами);</li><li>развивает критическое мышление (объяснение принципов);</li><li>предполагает командную работу (работа в группах) и проектную деятельность (создание и тестирование фильтра).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком директивный подход; отсутствует самостоятельность в исследовании; меньше возможностей для творчества.</li><li>Вариант В. Хотя включает командную работу, но опирается на готовые инструкции, меньше возможностей для глубокого анализа, отсутствует междисциплинарный подход.</li><li>Вариант Г. Хотя включает практическую работу, но отсутствует физический компонент, меньше глубины в объяснении процессов, нет работы с принципами фильтрации.</li></ul></ul>'
+  },
+  {
+    id: 'q39', u: 'У12',
+    text: 'Сфагновые болота как природные фильтры очищают дождевую воду. Вы дали учащимся задание: из предложенных материалов (стебли сельдерея, пищевые красители, вата, песок, уголь) создать фильтр для воды и объяснить принцип его работы. Как лучше организовать эту работу?',
+    options: [
+      { letter: 'А', text: 'Раздам каждому подробную инструкцию. Учащиеся выполняют задания по инструкции. Проверяю и комментирую результаты.' },
+      { letter: 'Б', text: 'Командам раздаю материалы и прошу провести эксперимент. Каждая команда фиксирует результаты, работает с микроскопом, изучает принципы фильтрации. По итогам создают и тестируют фильтр.' },
+      { letter: 'В', text: 'Делю класс на команды, раздаю материалы и подробные инструкции. Учащиеся проводят эксперимент и записывают наблюдения.' },
+      { letter: 'Г', text: 'Командам раздаю материалы, прошу провести эксперимент и записать результаты. Но без микроскопа и без объяснения принципов фильтрации.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает практический подход через изучение реальных научных исследований, анализ звуковых сигналов, игровую форму обучения;</li><li>интегрирует несколько областей знания (биологию (изучение звуков животных), лингвистику (анализ языка), информатику (работа со звуковыми файлами), психологию (понимание поведения животных);</li><li>включает исследовательский компонент через декодирование сигналов, составление «словарей», анализ контекстов;</li><li>отражает практическую направленность (работа со звуковыми сигналами);</li><li>включает технологическую составляющую (работа с аудиофайлами);</li><li>развивает критическое мышление (анализ возможностей общения);</li><li>предполагает командную работу (игровая форма);</li><li>отражает социальную значимость (понимание коммуникации).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком абстрактный подход через интеллект-карту; меньше практической составляющей; отсутствует работа с реальными данными.</li><li>Вариант Б. Ограничивается только просмотром видео; меньше возможностей для практического исследования; отсутствует междисциплинарный подход.</li><li>Вариант В. Сфокусирован на теоретическом изучении; меньше практической направленности; отсутствует исследовательский компонент.</li></ul></ul>'
+  },
+  // У13 — ещё 2 задания
+  {
+    id: 'q31', u: 'У13',
+    text: 'Учащиеся заговорили на уроке о книге Р. Киплинга «Маугли» и завязался спор: можно ли научиться говорить на языке животных, мог ли Маугли овладеть речью людей? Как вы разрешите этот спор?',
+    options: [
+      { letter: 'А', text: 'Предложу коллективно составить интеллект-карту «Говорят ли животные?». При подведении итогов обращу внимание на отличия речи людей от звуковых сигналов животных.' },
+      { letter: 'Б', text: 'Покажу фрагмент учебного видеоролика о человеческой речи и звуках животных. Организую дискуссию, чтобы сформировать понимание отличий.' },
+      { letter: 'В', text: 'Попрошу ребят повторить параграф «Речь человека и общение животных» и подготовить ответ на контрольный вопрос. Покажу презентацию «Язык животных в мире лингвистики».' },
+      { letter: 'Г', text: 'Попрошу коллегу-филолога рассказать о приёме одушевления животных. Покажу презентацию «Как учёные пытаются выучить язык животных». Расскажу о декодировании сигналов, составлении «словарей». В качестве примера изучим в формате игры мяуканье в разных контекстах.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает оптимальный баланс между самостоятельностью учащихся, возможностью получения консультации, практической реализацией идей;</li><li>интеграция разных областей знания;</li><li>предполагает командную работу (работа в группах);</li><li>отражает социальную значимость (развитие школьного бренда);</li><li>включает технологическую составляющую (работа с современными инструментами)</li><li>реализовывается проектная деятельность (создание продукта);</li><li>развивает креативное мышление (генерация идей);</li><li>отражена коммуникативная составляющая (защита проектов);</li><li>отражена практическая направленность (реализация проектов).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком большая автономность; отсутствует поддержка в случае затруднений; меньше возможностей для развития.</li><li>Вариант Б. Чрезмерный контроль; меньше самостоятельности; ограничение творческого потенциала.</li><li>Вариант Г. Навязывание конкретных решений; меньше возможностей для самостоятельного поиска; ограничение креативности.</li></ul></ul>'
+  },
+  {
+    id: 'q40', u: 'У13',
+    text: 'Вы решили продемонстрировать учащимся возможности коллективного интеллекта и организовать хакатон по укреплению бренда школы. Как вы организуете хакатон в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Обозначаете теоретическую базу и инструменты. Команды работают полностью самостоятельно. В конце представляют результат. Вы не вмешиваетесь в процесс.' },
+      { letter: 'Б', text: 'Обозначаете теоретическую базу и инструменты. Постоянно контролируете ход работы каждой команды. В конце оцениваете результаты.' },
+      { letter: 'В', text: 'Обозначаете теоретическую базу и инструменты. Команды работают самостоятельно, но могут обращаться за консультацией. В конце защищают проекты перед жюри.' },
+      { letter: 'Г', text: 'Обозначаете теоретическую базу, предлагаете конкретные идеи для реализации. Команды выбирают из предложенного и реализуют. В конце представляют результат.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает исследовательскую деятельность (изучение профессий);</li><li>отражает междисциплинарный подход (связь технологий и профессий);</li><li>имеет практическую направленность (актуальные компетенции);</li><li>развивает критическое мышление (формулировка вопросов);</li><li>отражена коммуникативная составляющая (диалог со специалистами);</li><li>включает технологическую составляющую (трансформация профессий);</li><li>имеет профориентационную направленность (знакомство с профессиями);</li><li>предполагает командную работу (подготовка вопросов);</li><li>реализует проектный подход (исследование специфики профессий).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Сфокусирован только на подготовке специалистов; Меньше внимания уделяется подготовке учащихся; Отсутствует системный подход к обсуждению технологий.</li><li>Вариант Б. Меньше фокуса на развитии компетенций; Ограничивается только проектной работой.</li><li>Вариант Г. Отсутствует структурированность; Меньше подготовки к встрече; Риск хаотичного обсуждения.</li></ul></ul>'
+  },
+  {
+    id: 'q41', u: 'У13',
+    text: 'Взаимное обучение играет важную роль в STEAM-образовании. Вы пригласили специалистов разных профессий для встречи с учащимися. Как организовать встречу в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Узнаёте заранее, чем специалисты могут поделиться. Они рассказывают о применении передовых технологий в их профессии и каких навыков она требует.' },
+      { letter: 'Б', text: 'На первой встрече специалисты рассказывают, чем могут помочь в работе над школьными проектами.' },
+      { letter: 'В', text: 'Просите учащихся изучить специфику профессий гостей и подготовить вопросы. Гостей просите рассказать, как технологии трансформируют их профессии. Учащиеся задают вопросы, обсуждают актуальные компетенции.' },
+      { letter: 'Г', text: 'Приглашаете всех учащихся и просите задавать гостям как можно больше вопросов об особенностях работы, плюсах и минусах.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает все необходимые компоненты STEAM-урока (сценарий с подробным описанием, мультимедийное сопровождение, межпредметную матрицу, фокус на учебно-познавательной деятельности);</li><li>предполагает командную работу;</li><li>отражает междисциплинарную интеграцию через матрицу;</li><li>реализовывается системный подход к проектированию урока;</li><li>включает технологическую составляющую (онлайн-сервисы);</li><li>отражена практическая направленность (учебно-познавательная деятельность);</li><li>включает мультимедийное сопровождение</li><li>предполагает командную работу (разработка с коллегами);</li><li>имеет проблемный характер (ключевая проблема) и практическую пнаправленность (рабочие листы).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком упрощенный подход; отсутствует межпредметная интеграция; нет технологической составляющей.</li><li>Вариант Б. ограничивается только опытно-экспериментальной деятельностью; отсутствует системная междисциплинарная матрица;  недостаточно проработана технологическая составляющая.</li><li>Вариант В. Хотя включает межпредметную матрицу, но отсутствует мультимедийная составляющая, нет ссылок на онлайн-ресурсы, меньше возможностей для интеграции технологий.</li></ul></ul>'
+  },
+  // У14 — ещё 2 задания
+  {
+    id: 'q32', u: 'У14',
+    text: 'Вам поручено разработать дизайн STEAM-урока. При этом необходимо учесть, какие компоненты будут включены в урок, какие материалы будут сопровождать урок в обязательном порядке, а какие — в качестве дополнения.',
+    options: [
+      { letter: 'А', text: 'Урок будет включать стандартные этапы, только тема будет межпредметной. План-конспект оформлю в виде технологической карты. Разработаю рабочие листы для учащихся.' },
+      { letter: 'Б', text: 'Стандартные этапы урока с обязательным присутствием элементов опытно-экспериментальной деятельности. К плану-конспекту приложу мультимедийную презентацию. Разработаю рабочие листы.' },
+      { letter: 'В', text: 'Разработаю сценарий, в котором отражу все этапы. Включу межпредметную матрицу, отражающую связь между STEAM-блоками. Разработаю рабочий лист для учащихся.' },
+      { letter: 'Г', text: 'Разработаю сценарий урока со всеми этапами и ключевой проблемой. Разработаю с помощью онлайн-сервисов мультимедийное сопровождение. Включу межпредметную матрицу, разработанную совместно с коллегами. Разработаю рабочие листы для учащихся.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: Г</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает комплексный подход через анализ научно-технических достижений, использование интерактивных моделей, сравнение различных систем, развитие критического мышления;</li><li>включает компоненты STEAM-образования (научную составляющую (астрономия), технологическую часть (интерактивные модели), математический анализ (движение планет), инженерный подход (моделирование систем));</li><li>отражена исследовательская деятельность (анализ предпосылок);</li><li>имеет практическую направленность (работа с моделями);</li><li>отражен междисциплинарный подход (история + астрономия + технологии);</li><li>развивает критического мышления (сравнение систем);</li><li>включает технологическую составляющую (использование моделей);</li><li>отражает системный подход (анализ предпосылок);</li><li>предполагает командную работу (групповая деятельность).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Слишком теоретический подход; отсутствует практическая составляюща; меньше возможностей для развития критического мышления.</li><li>Вариант Б. Сфокусирован только на одном историческом периоде; меньше охвата материала; ограниченный подход к анализу.</li><li>Вариант В. Хотя включает дискуссию, но не охватывает весь исторический контекст, меньше возможностей для анализа, отсутствует технологическая составляющая.</li></ul></ul>'
+  },
+  {
+    id: 'q42', u: 'У14',
+    text: 'Вы включаете STEAM-кейс в урок по изучению Солнечной системы, используя ситуационный анализ. Разным группам предложен материал о развитии астрономии. Какой подход наиболее соответствует STEAM?',
+    options: [
+      { letter: 'А', text: 'Подводите учащихся к пониманию: развитие математики в Древней Греции предопределило идеи о закономерном вращении планет. Учащиеся изучают математические основы.' },
+      { letter: 'Б', text: 'Предлагаете материал о том, как в XVI веке Коперник разработал теорию движения планет. Учащиеся анализируют его вклад.' },
+      { letter: 'В', text: 'Делите класс на группы: одна доказывает идеи Кеплера, другая — опровергает. Дискуссия помогает понять развитие науки.' },
+      { letter: 'Г', text: 'Предлагаете учащимся составить логико-смысловую модель «Предпосылки перехода от геоцентризма к гелиоцентризму». Используете интерактивные модели Солнечной системы. Учащиеся сравнивают системы и анализируют роль технологий.' }
+    ],
+    correct: 'Г',
+    explanation: '<strong>Правильный ответ: А</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>обеспечивает глубокий анализ проблемы через работу с научной статьей, исследование химических процессов, изучение биологических механизмов, поиск практических применений;</li><li>интегрирует STEAM-блоки (естественные науки (биология бактерий), технологии (компьютерные устройства), инженерию (разработка новых технологий), математику (химические реакции), искусство (поиск креативных решений));</li><li>включает исследовательскую деятельность (анализ научной статьи);</li><li>отражен междисциплинарный подход (биология + химия + технологии);</li><li>имеет практическую направленность (поиск применений);</li><li>развивает критическое мышление (анализ процессов);</li><li>включает технологическую составляющую (разработка устройств) и проектная деятельность (поиск решений);</li><li>предполагает командную работу (возможна групповая деятельность).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Слишком поверхностный подход; отсутствует глубокий анализ процессов; нет междисциплинарной связи.</li><li>Вариант В. Хотя включает анализ химических реакций, но не требует поиска дополнительных примеров, меньше возможностей для практического применения, конспект становится конечной целью.</li><li>Вариант Г. Хотя включает поиск примеров, но отсутствует химический анализ, меньше глубины в исследовании процессов, конспект остается основной целью.</li></ul></ul>'
+  },
+  {
+    id: 'q43', u: 'У14',
+    text: 'Вы включаете STEAM-кейс в урок по изучению бактерий, используя метод анализа научных новостей. Предлагаете учащимся текст о бактериях, производящих электричество. Какой подход наиболее соответствует STEAM?',
+    options: [
+      { letter: 'А', text: 'Просите прочитать статью, выделить ключевые моменты. Написать возможные химические реакции, выяснить механизм передачи электронов. Найти примеры применения таких бактерий в технологиях.' },
+      { letter: 'Б', text: 'Просите прочитать статью и составить краткий конспект. Письменно отвечают на вопросы по тексту.' },
+      { letter: 'В', text: 'Просите прочитать статью, написать химические реакции. Конспект — основная цель работы.' },
+      { letter: 'Г', text: 'Просите прочитать статью, найти примеры применения бактерий. Без химического анализа.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>задания моделируют реальные жизненные ситуации, где нужно одновременно применять знания из разных областей – естественных наук, математики, технологий, иногда искусства (например, интерпретация графиков, схем, визуальных данных);</li><li>имеет практическую направленность (применений знаний для решения проблем из реальной жизни);</li><li>обеспечивает формирующее оценивание.</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант Б. Менее динамичен; не обеспечивает мгновенной обратной связи; менее мотивирующий для учащихся; презентация с заданиями (медиаазбука); предполагает пассивное восприятие: ученики смотрят слайды и отвечают устно/письменно.</li><li>Вариант В. Викторины чаще проверяют факты и скорость реакции, а не глубокое понимание и умение применять знания в нестандартных ситуациях.</li><li>Вариант Г. Многие шаблоны LearningApps (сопоставление, заполнение пропусков) нацелены на тренировку и закрепление, а не на исследование и решение проблем.</li></ul></ul>'
+  },
+  // У15 — ещё 2 задания
+  {
+    id: 'q33', u: 'У15',
+    text: 'В начале урока вам нужно провести актуализацию знаний по прошлой теме. На уроке планируется разобрать много нового материала, поэтому важно потратить не более 7 минут. Какие цифровые инструменты помогут вам быстро и эффективно это сделать?',
+    options: [
+      { letter: 'А', text: 'Разработаю небольшое задание по типу PISA, учитывая три группы компетенций, характеризующих естественно-научную грамотность.' },
+      { letter: 'Б', text: 'Оформлю накопленные задания в формате медиаазбуки в PowerPoint. Одно задание — один слайд. Запущу с помощью проектора.' },
+      { letter: 'В', text: 'Разработаю онлайн-викторину в Kahoot! или Quizlet. Ребята проверят себя и узнают, кто усвоил материал лучше всех.' },
+      { letter: 'Г', text: 'Предложу классу выполнить несколько заданий по пройденному материалу в LearningApps.' }
+    ],
+    correct: 'А',
+    explanation: '<strong>Правильный ответ: В</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>требует комплексного анализа данных;</li><li>включает работу с количественной информацией;</li><li>развивает критическое мышление при оценке методов подсчета (оценка факторов погрешности);</li><li>стимулирует поиск инновационных решений (поиск новых методов учета).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Сфокусирован на теоретическом объяснении; меньше внимания уделяется анализу данных; отсутствует работа с количественной информацией.</li><li>Вариант Б. Слишком узкоспециализированный; не включает анализ факторов погрешности; меньше возможностей для развития компетенций.</li><li>Вариант Г. Хотя включает анализ маршрутов, но меньше внимания уделяется методам подсчета, отсутствует работа с данными, меньше возможностей для инноваций.</li></ul></ul>'
+  },
+  {
+    id: 'q44', u: 'У15',
+    text: 'Вы разрабатываете задание для проверки естественно-научных компетенций учащихся. Какое из заданий в большей степени соответствует критерию сформированности компетенций в логике STEAM?',
+    options: [
+      { letter: 'А', text: 'Объясните, почему большинство перелётных птиц сначала собирается в одном месте, а потом мигрирует большими стаями. Изучите методы изучения миграции птиц.' },
+      { letter: 'Б', text: 'Изучите картографическую основу и определите направления миграции птиц.' },
+      { letter: 'В', text: 'Проанализируйте данные о количестве мигрирующих птиц, сделайте выводы о факторах, которые препятствуют точному подсчёту. Приведите примеры совершенствования учёта мигрирующих птиц.' },
+      { letter: 'Г', text: 'Сопоставите маршруты миграции птиц и объясните причины отличий. Изучите методы подсчёта птиц.' }
+    ],
+    correct: 'В',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li>Этот вариант наиболее соответствует логике STEAM-образования, так как:</li><li>включает комплексный подход к оценке достижений (экспериментальную деятельность, цифровые компетенции, исследовательскую работу, дизайнерские решения, научные публикации);</li><li>интегрирует разные STEAM-блоки (Science (научные статьи, эксперименты), Technology (веб-сайты, приложения), Engineering (прототипы решений), Arts (дизайнерские разработки), Mathematics (экспериментальные данные)).</li></ul><p><strong>Почему другие варианты менее подходят:</strong></p><ul><li>Вариант А. Не включает научные публикации; Отсутствует демонстрация дизайнерских решений; Меньше возможностей для демонстрации исследовательской работы.</li><li>Вариант В. Слишком узко сфокусирован на цифровых продуктах; Отсутствует экспериментальная деятельность; Нет отражения исследовательской работы.</li><li>Вариант Г. Хотя включает важные элементы, но отсутствует демонстрация дизайнерских решений, меньше возможностей для показа творческих достижений, не полный охват STEAM-компонентов.</li></ul></ul>'
+  },
+  {
+    id: 'q45', u: 'У15',
+    text: 'Одним из способов отслеживания результатов учащихся является портфолио. Что вы отнесёте к обязательным компонентам портфолио STEAM-компетентности?',
+    options: [
+      { letter: 'А', text: 'Дневник наблюдений и экспериментов, самостоятельно разработанные веб-сайты и веб-приложения.' },
+      { letter: 'Б', text: 'Дневник наблюдений и экспериментов, самостоятельно разработанные веб-сайты, научные статьи учащегося, результаты научных работ, прототипы собственных дизайнерских решений.' },
+      { letter: 'В', text: 'Самостоятельно разработанные веб-сайты, веб- и мобильные приложения.' },
+      { letter: 'Г', text: 'Дневник наблюдений и экспериментов, веб-сайты и приложения, научные статьи, результаты олимпиад и конкурсов, прототипы и дизайнерские решения.' }
+    ],
+    correct: 'Б',
+    explanation: '<strong>Правильный ответ: Б</strong><ul><li><em>Комплексный подход к оценке достижений:</em> экспериментальная деятельность, цифровые компетенции, исследовательская работа, дизайнерские решения, публикации</li><li><em>Интегрирует все STEAM-блоки:</em> Science (статьи, эксперименты), Technology (веб-сайты), Engineering (прототипы), Arts (дизайн), Mathematics (исследования)</li></ul><strong>Почему другие варианты менее подходят:</strong><ul><li><em>Вариант А.</em> Не включает научные публикации; отсутствует демонстрация дизайнерских решений; меньше возможностей для демонстрации исследовательской работы.</li><li><em>Вариант В.</em> Слишком узко сфокусирован на цифровых продуктах; отсутствует экспериментальная деятельность; нет отражения исследовательской работы.</li><li><em>Вариант Г.</em> Хотя включает важные элементы, но отсутствует демонстрация дизайнерских решений; не полный охват STEAM-компонентов.</li></ul>'
+  }
+];
+
+// Merge all questions
+const allQuestions = [...questions, ...extraQuestions];
+
+// Shuffle and add score mapping
+// score: right=correct → U gets 1 point (out of possible per U)
+// Scoring: each question max 1 point = answer correct
+// Scale to 1-5: sum per U / count per U * 5 (capped at 5, min 1)
+
+// =========================================================
+// STATE
+// =========================================================
+let answers = {}; // questionId → letter chosen
+let revealed = {}; // questionId → bool
+let chartInstance = null;
+let activeUChip = null;
+
+// =========================================================
+// RENDER QUESTIONS
+// =========================================================
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+const shuffledQuestions = shuffle(allQuestions);
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+  shuffledQuestions.forEach((q, idx) => {
+    const shuffledOptions = [...q.options].sort((a, b) => a.letter.localeCompare(b.letter, 'ru'));
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${q.id}`;
+
+    const optionsHTML = shuffledOptions.map(opt => `
+      <div class="option" id="opt-${q.id}-${opt.letter}" onclick="selectOption('${q.id}', '${opt.letter}', this)">
+        <div class="option-letter">${opt.letter}</div>
+        <div class="option-text">${opt.text}</div>
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="question-header">
+        <div class="q-number">${idx + 1}</div>
+        <div class="q-text">${q.text}</div>
+      </div>
+      <div class="q-instruction">Выберите ответ, который в большей степени соответствует логике STEAM-образования.</div>
+      <div class="options">${optionsHTML}</div>
+      <div class="explanation" id="exp-${q.id}"></div>
+    `;
+    container.appendChild(card);
+  });
+  updateProgress();
+}
+
+function selectOption(qId, letter, el) {
+  if (revealed[qId]) return;
+  answers[qId] = letter;
+
+  // Remove selected from all options of this question
+  document.querySelectorAll(`[id^="opt-${qId}-"]`).forEach(o => {
+    o.classList.remove('selected');
+  });
+  el.classList.add('selected');
+  updateProgress();
+  checkEnableSubmit();
+}
+
+function updateProgress() {
+  const total = shuffledQuestions.length;
+  const done = Object.keys(answers).length;
+  document.getElementById('progressCount').textContent = `${done} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(done / total) * 100}%`;
+}
+
+function checkEnableSubmit() {
+  const total = shuffledQuestions.length;
+  const done = Object.keys(answers).length;
+  document.getElementById('submitBtn').disabled = done < total;
+}
+
+// =========================================================
+// SUBMIT
+// =========================================================
+function submitTest() {
+  // Reveal all answers at once
+  shuffledQuestions.forEach(q => {
+    revealed[q.id] = true;
+    const chosen = answers[q.id];
+    document.querySelectorAll(`[id^="opt-${q.id}-"]`).forEach(o => {
+      o.classList.add('disabled');
+      o.classList.remove('selected');
+      const letter = o.id.replace(`opt-${q.id}-`, '');
+      if (letter === q.correct) o.classList.add('correct');
+      else if (letter === chosen && chosen !== q.correct) o.classList.add('wrong');
+    });
+    // Show explanation
+    const expEl = document.getElementById(`exp-${q.id}`);
+    expEl.innerHTML = q.explanation;
+    expEl.classList.add('show');
+  });
+
+  setTimeout(showResults, 400);
+}
+
+// =========================================================
+// RESULTS
+// =========================================================
+function showResults() {
+  document.getElementById('testSection').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  window.scrollTo(0, 0);
+
+  const name = document.getElementById('studentName').value || 'Участник';
+  document.getElementById('studentNameDisplay').innerHTML = `<p style="opacity:0.85;font-size:0.95rem;margin-bottom:8px">${name}</p>`;
+
+  // Count total correct (raw score out of 45)
+  let totalCorrect = 0;
+  shuffledQuestions.forEach(q => {
+    if (answers[q.id] === q.correct) totalCorrect++;
+  });
+  const totalQuestions = shuffledQuestions.length;
+
+  // Compute U scores
+  const uScores = {};
+  const uCounts = {};
+  shuffledQuestions.forEach(q => {
+    const u = q.u;
+    if (!uScores[u]) { uScores[u] = 0; uCounts[u] = 0; }
+    uCounts[u]++;
+    if (answers[q.id] === q.correct) uScores[u]++;
+  });
+
+  // Scale to 1-5
+  const uLabels = Object.keys(uDescriptions).sort();
+  const uValues = uLabels.map(u => {
+    if (!uCounts[u]) return 1;
+    return Math.max(1, Math.round((uScores[u] / uCounts[u]) * 4) + 1);
+  });
+
+  const avgScore = uValues.reduce((a, b) => a + b, 0) / uValues.length;
+
+  // Show raw score and level
+  document.getElementById('scoreDisplay').textContent = `${totalCorrect} / ${totalQuestions}`;
+
+  /* ===== Save result to localStorage ===== */
+  try {
+    var _pct3 = Math.round(totalCorrect / totalQuestions * 100);
+    localStorage.setItem('steam_block3', JSON.stringify({
+      displayScore: _pct3 + '%',
+      normalized: totalCorrect / totalQuestions
+    }));
+    var _n3 = (document.getElementById('studentName') || {}).value || '';
+    if (_n3.trim()) localStorage.setItem('steam_user_name', _n3.trim());
+  } catch(e) {}
+  const levelEl = document.getElementById('levelDisplay');
+  const pct = totalCorrect / totalQuestions;
+  if (pct >= 0.72) {
+    levelEl.textContent = 'ВЫСОКИЙ';
+    levelEl.className = 'score-level level-high';
+    document.getElementById('scoreDisplay').className = 'score-big score-green';
+  } else if (pct >= 0.45) {
+    levelEl.textContent = 'СРЕДНИЙ';
+    levelEl.className = 'score-level level-mid';
+    document.getElementById('scoreDisplay').className = 'score-big score-orange';
+  } else {
+    levelEl.textContent = 'НИЗКИЙ';
+    levelEl.className = 'score-level level-low';
+    document.getElementById('scoreDisplay').className = 'score-big score-red';
+  }
+
+  // Draw radar chart
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: uLabels,
+      datasets: [{
+        label: 'Уровень',
+        data: uValues,
+        backgroundColor: 'rgba(61, 107, 142, 0.15)',
+        borderColor: 'rgba(61, 107, 142, 0.8)',
+        borderWidth: 2.5,
+        pointBackgroundColor: uValues.map(v =>
+          v >= 4 ? '#4caf7d' : v >= 3 ? '#f0a500' : '#e05454'
+        ),
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: { stepSize: 1, display: false },
+          grid: { color: 'rgba(0,0,0,0.08)' },
+          pointLabels: {
+            font: { size: 11, family: 'Raleway', weight: '600' },
+            color: '#2c3e50',
+            cursor: 'pointer',
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => ctx[0].label,
+            label: ctx => `Балл: ${ctx.raw} / 5`
+          }
+        }
+      },
+    }
+  });
+
+  // Radar label click/hover — works by computing each label's position manually
+  function getPointLabelPositions() {
+    const scale = chartInstance.scales.r;
+    if (!scale) return [];
+    const positions = [];
+    const count = uLabels.length;
+    const cx = scale.xCenter, cy = scale.yCenter;
+    const r = scale.drawingArea;
+    // Chart.js places first label at top (270°), going clockwise
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i / count) - Math.PI / 2;
+      // Labels sit just outside the outermost ring
+      const dist = r + 18;
+      positions.push({ x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle), u: uLabels[i] });
+    }
+    return positions;
+  }
+
+  document.getElementById('radarChart').addEventListener('click', function(evt) {
+    const rect = this.getBoundingClientRect();
+    const mx = evt.clientX - rect.left;
+    const my = evt.clientY - rect.top;
+    const positions = getPointLabelPositions();
+    for (const pos of positions) {
+      if (Math.abs(mx - pos.x) < 32 && Math.abs(my - pos.y) < 18) {
+        showUDescription(pos.u);
+        return;
+      }
+    }
+  });
+
+  document.getElementById('radarChart').addEventListener('mousemove', function(evt) {
+    const rect = this.getBoundingClientRect();
+    const mx = evt.clientX - rect.left;
+    const my = evt.clientY - rect.top;
+    const positions = getPointLabelPositions();
+    const onLabel = positions.some(p => Math.abs(mx - p.x) < 32 && Math.abs(my - p.y) < 18);
+    this.style.cursor = onLabel ? 'pointer' : 'default';
+  });
+
+  // 45 per-question chips grouped by U
+  const grid = document.getElementById('uGrid');
+  grid.innerHTML = '';
+
+  // Build map: u -> questions sorted by id
+  const qByU = {};
+  uLabels.forEach(u => { qByU[u] = []; });
+  shuffledQuestions.forEach(q => { if (qByU[q.u]) qByU[q.u].push(q); });
+  Object.keys(qByU).forEach(u => {
+    qByU[u].sort((a, b) => parseInt(a.id.replace('q','')) - parseInt(b.id.replace('q','')));
+  });
+
+  uLabels.forEach(u => {
+    const qs = qByU[u] || [];
+    qs.forEach((q, qi) => {
+      const isCorrect = answers[q.id] === q.correct;
+      const chipCls = isCorrect ? 'high' : 'low';
+      const score = isCorrect ? 1 : 0;
+      const chip = document.createElement('div');
+      chip.className = `u-chip ${chipCls}`;
+      chip.style.cursor = 'pointer';
+      chip.title = 'Нажмите для пояснения';
+      chip.innerHTML = `
+        <div class="u-label">${u}<span style="font-size:0.65rem;opacity:0.6;margin-left:2px">#${qi+1}</span></div>
+        <div class="u-score">${score}</div>
+        <div class="u-of">из 1</div>
+      `;
+      chip.addEventListener('click', () => toggleQuestionTooltip(q, chip));
+      grid.appendChild(chip);
+    });
+  });
+
+  // Store for save
+  window._lastResult = { name, totalCorrect, totalQuestions, uLabels, uValues, level: levelEl.textContent };
+}
+
+function showUDescription(u) {
+  const tooltip = document.getElementById('uDescTooltip');
+  if (tooltip.dataset.active === u && tooltip.style.display !== 'none') {
+    tooltip.style.display = 'none';
+    tooltip.dataset.active = '';
+    return;
+  }
+  tooltip.dataset.active = u;
+  tooltip.innerHTML = `<strong>${u}</strong> – ${uDescriptions[u]}`;
+  tooltip.style.display = 'block';
+  // Scroll tooltip into view smoothly
+  setTimeout(() => tooltip.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function toggleQuestionTooltip(q, chip) {
+  const tooltip = document.getElementById('uTooltip');
+  const grid = document.getElementById('uGrid');
+  const key = q.id;
+  if (activeUChip === key && tooltip.classList.contains('show')) {
+    tooltip.classList.remove('show');
+    activeUChip = null;
+    return;
+  }
+  activeUChip = key;
+  tooltip.innerHTML = q.explanation;
+  tooltip.classList.add('show');
+  grid.parentNode.insertBefore(tooltip, grid.nextSibling);
+}
+
+function saveResult() {
+  const r = window._lastResult;
+  if (!r) return;
+  const levelColors = { 'ВЫСОКИЙ': '#4caf7d', 'СРЕДНИЙ': '#f0a500', 'НИЗКИЙ': '#e05454' };
+  const color = levelColors[r.level] || '#3d6b8e';
+  const date = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const uRows = r.uLabels.map((u, i) => `<tr><td style="padding:4px 12px;font-size:0.85rem">${u}</td><td style="padding:4px 12px;font-size:0.85rem;text-align:center">${r.uValues[i]} / 5</td></tr>`).join('');
+  const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Результат теста STEAM</title><style>body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;padding:24px;color:#2c3e50}h1{color:#3d6b8e}table{border-collapse:collapse;width:100%}td,th{border:1px solid #dde3ea;padding:6px 12px}th{background:#e8f1f8}.level{display:inline-block;padding:6px 18px;border-radius:8px;font-weight:700;color:white;background:${color};font-size:1.1rem}.score{font-size:2rem;font-weight:700;color:${color}}</style></head><body><h1>Результат теста STEAM-компетентности</h1><p><strong>Участник:</strong> ${r.name}</p><p><strong>Дата:</strong> ${date}</p><p><strong>Общий балл:</strong> <span class="score">${r.totalCorrect} / ${r.totalQuestions}</span></p><p><strong>Уровень:</strong> <span class="level">${r.level}</span></p><h3>Результаты по умениям</h3><table><tr><th>Умение</th><th>Балл (из 5)</th></tr>${uRows}</table></body></html>`;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `STEAM_результат_${r.name.replace(/\s+/g, '_')}_${date.replace(/\./g, '-')}.html`;
+  a.click();
+}
+
+function retryTest() {
+  answers = {};
+  revealed = {};
+  activeUChip = null;
+  const descT = document.getElementById('uDescTooltip');
+  if (descT) { descT.style.display = 'none'; descT.dataset.active = ''; }
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('testSection').style.display = 'block';
+  document.getElementById('studentName').value = '';
+  renderQuestions();
+  window.scrollTo(0, 0);
+}
+
+// Init
+renderQuestions();
+checkEnableSubmit();
+</script>
+</body>
+</html>

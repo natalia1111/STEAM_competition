@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета STEAM-компетентности</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #F4F1EB;
+    --bg2: #FFFFFF;
+    --card: #FFFFFF;
+    --text: #2C2C2C;
+    --text2: #5A5A5A;
+    --text3: #888;
+    --border: #E0DCD4;
+    --accent: #3D5A80;
+    --accent2: #98C1D9;
+    --shadow: rgba(60,60,60,0.08);
+    --level1: #E63946;
+    --level2: #F4845F;
+    --level3: #F9C74F;
+    --level4: #90BE6D;
+    --level5: #2D9F3C;
+    --level1-bg: #fde8ea;
+    --level2-bg: #fef0ea;
+    --level3-bg: #fef8e4;
+    --level4-bg: #eef7e8;
+    --level5-bg: #e2f5e4;
+    --radio-bg: #f0ede7;
+    --header-gradient: linear-gradient(135deg, #3D5A80 0%, #5B8FB9 50%, #98C1D9 100%);
+  }
+  html.dark {
+    --bg: #1A1B2E;
+    --bg2: #22243A;
+    --card: #2A2D45;
+    --text: #E8E6F0;
+    --text2: #A8A5B8;
+    --text3: #6E6B7F;
+    --border: #3A3D55;
+    --accent: #7BA7CC;
+    --accent2: #5B8FB9;
+    --shadow: rgba(0,0,0,0.3);
+    --level1-bg: #3d1a1e;
+    --level2-bg: #3d2a1e;
+    --level3-bg: #3d3518;
+    --level4-bg: #1e3318;
+    --level5-bg: #143518;
+    --radio-bg: #353750;
+    --header-gradient: linear-gradient(135deg, #2A3F5F 0%, #3D5A80 50%, #5B8FB9 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .header {
+    background: var(--header-gradient);
+    border-radius: 20px;
+    padding: 36px 28px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 30%;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: #fff;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header p {
+    color: rgba(255,255,255,0.85);
+    margin-top: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .question-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 14px;
+    border: 2px solid var(--border);
+    transition: border-color 0.4s, box-shadow 0.4s, background 0.3s;
+  }
+
+  .question-card.answered {
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+
+  .question-card.level-1 { border-color: var(--level1); background: var(--level1-bg); }
+  .question-card.level-2 { border-color: var(--level2); background: var(--level2-bg); }
+  .question-card.level-3 { border-color: var(--level3); background: var(--level3-bg); }
+  .question-card.level-4 { border-color: var(--level4); background: var(--level4-bg); }
+  .question-card.level-5 { border-color: var(--level5); background: var(--level5-bg); }
+
+  .question-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+
+  .question-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .radio-option {
+    position: relative;
+  }
+
+  .radio-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .radio-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--radio-bg);
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 2px solid transparent;
+    min-width: 60px;
+    text-align: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .radio-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .radio-label .score {
+    font-weight: 800;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .radio-label .label-text {
+    font-size: 0.7rem;
+    color: var(--text3);
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  .radio-option input:checked + .radio-label {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+
+  .radio-option.opt-1 input:checked + .radio-label { background: var(--level1); color: #fff; border-color: var(--level1); }
+  .radio-option.opt-2 input:checked + .radio-label { background: var(--level2); color: #fff; border-color: var(--level2); }
+  .radio-option.opt-3 input:checked + .radio-label { background: var(--level3); color: #1a1a1a; border-color: var(--level3); }
+  .radio-option.opt-4 input:checked + .radio-label { background: var(--level4); color: #fff; border-color: var(--level4); }
+  .radio-option.opt-5 input:checked + .radio-label { background: var(--level5); color: #fff; border-color: var(--level5); }
+
+  .radio-option.opt-1 input:checked + .radio-label .label-text,
+  .radio-option.opt-2 input:checked + .radio-label .label-text,
+  .radio-option.opt-4 input:checked + .radio-label .label-text,
+  .radio-option.opt-5 input:checked + .radio-label .label-text { color: rgba(255,255,255,0.9); }
+  .radio-option.opt-3 input:checked + .radio-label .label-text { color: rgba(0,0,0,0.6); }
+
+  /* Results */
+  .results-section {
+    margin-top: 32px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+    pointer-events: none;
+  }
+
+  .results-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .results-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px;
+    border: 2px solid var(--border);
+  }
+
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .result-bar-wrap {
+    margin-bottom: 12px;
+  }
+
+  .result-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .result-bar-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text2);
+  }
+
+  .result-bar-value {
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .result-bar {
+    height: 14px;
+    background: var(--radio-bg);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .result-bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0;
+  }
+
+  .total-block {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    transition: background 0.4s;
+  }
+
+  .total-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .total-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .total-level {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .total-block.level-1 { background: var(--level1-bg); }
+  .total-block.level-2 { background: var(--level2-bg); }
+  .total-block.level-3 { background: var(--level3-bg); }
+  .total-block.level-4 { background: var(--level4-bg); }
+  .total-block.level-5 { background: var(--level5-bg); }
+
+  .total-block.level-1 .total-score, .total-block.level-1 .total-level { color: var(--level1); }
+  .total-block.level-2 .total-score, .total-block.level-2 .total-level { color: var(--level2); }
+  .total-block.level-3 .total-score, .total-block.level-3 .total-level { color: var(--level3); }
+  .total-block.level-4 .total-score, .total-block.level-4 .total-level { color: var(--level4); }
+  .total-block.level-5 .total-score, .total-block.level-5 .total-level { color: var(--level5); }
+
+  .progress-bar-wrap {
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 8px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text2);
+  }
+
+  .progress-track {
+    height: 8px;
+    background: var(--radio-bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0;
+  }
+
+  .btn-save {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--header-gradient);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(61,90,128,0.3);
+  }
+
+  .btn-save:active {
+    transform: translateY(0);
+  }
+
+  .btn-save svg {
+    width: 20px; height: 20px;
+    fill: currentColor;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--level5);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    z-index: 9999;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .watermark {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: var(--text3);
+  }
+
+  .name-field {
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .name-field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text2);
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  .name-field input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--radio-bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    -webkit-appearance: none;
+  }
+
+  .name-field input::placeholder {
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  .name-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(61,90,128,0.15);
+  }
+
+  .results-student-name {
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px dashed var(--border);
+  }
+
+  .radar-wrap {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border);
+    text-align: center;
+  }
+
+  .radar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    margin-bottom: 16px;
+  }
+
+  .radar-canvas-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .radar-canvas-container canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 500px) {
+    .header h1 { font-size: 1.3rem; }
+    .radio-label { padding: 8px 10px; min-width: 52px; }
+    .radio-label .score { font-size: 1rem; }
+    .results-card { padding: 20px; }
+    .wrapper { padding: 10px; }
+  }
+
+  /* ===== STEAM NAV (injected) ===== */
+  .steam-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(15,22,36,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+  }
+  .steam-nav-logo {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #5b9bd5;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+  .steam-nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .steam-nav-links a {
+    color: #8fa3c0;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: block;
+  }
+  .steam-nav-links a:hover {
+    color: #eef2f8;
+    background: rgba(255,255,255,0.08);
+  }
+  .steam-nav-links a.steam-active {
+    color: white !important;
+    background: #3d5a80 !important;
+  }
+  @media (max-width: 800px) {
+    .steam-nav-links { display: none; }
+    .steam-nav { padding: 12px 20px; }
+  }
+
+</style>
+</head>
+<body style="padding-top:54px;">
+<nav class="steam-nav">
+  <div class="steam-nav-logo">STEAM</div>
+  <ul class="steam-nav-links">
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="1_motivacion.html" id="snav1" class="steam-active">Мотивационно-личностный</a></li>
+    <li><a href="2_kognitivny.html" id="snav2">Когнитивный</a></li>
+    <li><a href="3_umeniya.html" id="snav3">Деятельностный: умения</a></li>
+    <li><a href="4_sposob.html" id="snav4">Деятельностный: способы</a></li>
+    <li><a href="summary.html">Сводные результаты</a></li>
+  </ul>
+</nav>
+
+
+<div class="wrapper" id="app">
+  <div class="header">
+  <h1>Определение уровней сформированности компонентов STEAM-компетентности</h1>
+    <p>Мотивационно-личностный</p>
+    <p>Оцените по шкале от 1 до 5 уровень выраженности каждого качества</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--level1)"></div>1 — Очень низкий</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--level2)"></div>2 — Низкий</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--level3)"></div>3 — Средний</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--level4)"></div>4 — Высокий</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--level5)"></div>5 — Очень высокий</div>
+  </div>
+
+  <div class="name-field">
+    <label for="studentName">ФИО студента</label>
+    <input type="text" id="studentName" placeholder="Введите фамилию, имя, отчество" autocomplete="name">
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-info">
+      <span>Прогресс</span>
+      <span id="progressText">0 / 10</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="results-section" id="resultsSection">
+    <div class="results-card" id="resultsCard">
+      <div class="results-title">📊 Результаты анкетирования</div>
+      <div class="results-student-name" id="resultsName" style="display:none"></div>
+      <div id="resultBars"></div>
+      <div class="total-block" id="totalBlock">
+        <div class="total-label">Общий средний балл</div>
+        <div class="total-score" id="totalScore">—</div>
+        <div class="total-level" id="totalLevel"></div>
+      </div>
+      <div class="radar-wrap">
+        <div class="radar-title">Профиль STEAM-компетентности</div>
+        <div class="radar-canvas-container">
+          <canvas id="radarCanvas" width="520" height="520"></canvas>
+        </div>
+      </div>
+    </div>
+    <button class="btn-save" id="btnSave" type="button">
+      <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18l-5.5 9h3.5v5h4v-5h3.5L12 2z"/></svg>
+      Сохранить как изображение
+    </button>
+  </div>
+
+  <div class="watermark">STEAM-компетентность · Мотивационно-личностный компонент</div>
+</div>
+
+<div class="toast" id="toast">✓ Изображение сохранено!</div>
+
+<script>
+(function() {
+  /* Dark mode detection */
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(event) {
+    if (event.matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  });
+
+  var questions = [
+    "Стремление к формированию у учащихся целостных представлений о взаимосвязи между естественно-научными, гуманитарными и техническими областями знаний",
+    "Готовность к поиску и установлению причинно-следственных и межпредметных связей в процессе преподавания естественно-научных учебных предметов",
+    "Желание организовывать научно-исследовательскую деятельность учащихся при обучении их естественно-научным учебным предметам во взаимосвязи с гуманитарными и техническими областями знаний",
+    "Потребность в организации проектного обучения в будущей профессиональной деятельности",
+    "Увлечённость научно-техническим творчеством и стремление вовлечь учащихся в такой вид работы",
+    "Мотивация по реализации проблемного обучения в преподавании естественно-научных учебных предметов с целью установления взаимосвязи между областями знаний",
+    "Желание в подготовке к реализации инженерно-технической деятельности учащихся с целью вовлечения их в такой вид работы",
+    "Заинтересованность в реализации практико-ориентированного обучения в преподавании естественно-научных учебных предметов",
+    "Приверженность идеям возможности познания окружающего мира посредством достижений научно-технического прогресса",
+    "Стремление к совершенствованию своей профессиональной компетенции в области применения современных образовательных технологий, методов, приёмов обучения"
+  ];
+
+  var shortLabels = [
+    "Целостные представления",
+    "Межпредметные связи",
+    "Науч.-исслед. деятельность",
+    "Проектное обучение",
+    "Науч.-техн. творчество",
+    "Проблемное обучение",
+    "Инженерн.-техн. деятельность",
+    "Практико-ориент. обучение",
+    "Познание через НТП",
+    "Проф. совершенствование"
+  ];
+
+  var levelLabels = ["очень\nнизкий", "низкий", "средний", "высокий", "очень\nвысокий"];
+  var levelNames = ["Очень низкий", "Низкий", "Средний", "Высокий", "Очень высокий"];
+
+  var answers = new Array(questions.length).fill(0);
+  var container = document.getElementById('questionsContainer');
+  var studentNameInput = document.getElementById('studentName');
+
+  studentNameInput.addEventListener('input', function() {
+    var nameEl = document.getElementById('resultsName');
+    var val = studentNameInput.value.trim();
+    if (val) {
+      nameEl.textContent = val;
+      nameEl.style.display = 'block';
+    } else {
+      nameEl.style.display = 'none';
+    }
+  });
+
+  questions.forEach(function(q, i) {
+    var card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + i;
+
+    var numEl = document.createElement('div');
+    numEl.className = 'question-number';
+    numEl.textContent = i + 1;
+
+    var textEl = document.createElement('div');
+    textEl.className = 'question-text';
+    textEl.textContent = q;
+
+    var radioGroup = document.createElement('div');
+    radioGroup.className = 'radio-group';
+
+    for (var v = 1; v <= 5; v++) {
+      var option = document.createElement('div');
+      option.className = 'radio-option opt-' + v;
+
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q' + i;
+      input.value = v;
+      input.id = 'q' + i + '_v' + v;
+
+      var label = document.createElement('label');
+      label.className = 'radio-label';
+      label.setAttribute('for', 'q' + i + '_v' + v);
+
+      var scoreSpan = document.createElement('span');
+      scoreSpan.className = 'score';
+      scoreSpan.textContent = v;
+
+      var labelText = document.createElement('span');
+      labelText.className = 'label-text';
+      labelText.textContent = levelLabels[v - 1].replace('\n', ' ');
+
+      label.appendChild(scoreSpan);
+      label.appendChild(labelText);
+      option.appendChild(input);
+      option.appendChild(label);
+      radioGroup.appendChild(option);
+
+      (function(idx, val) {
+        input.addEventListener('change', function() {
+          answers[idx] = val;
+          updateCardStyle(idx, val);
+          updateProgress();
+          updateResults();
+        });
+      })(i, v);
+    }
+
+    card.appendChild(numEl);
+    card.appendChild(textEl);
+    card.appendChild(radioGroup);
+    container.appendChild(card);
+  });
+
+  function updateCardStyle(idx, val) {
+    var card = document.getElementById('card-' + idx);
+    card.className = 'question-card answered level-' + val;
+  }
+
+  function updateProgress() {
+    var answered = answers.filter(function(a) { return a > 0; }).length;
+    document.getElementById('progressText').textContent = answered + ' / ' + questions.length;
+    document.getElementById('progressFill').style.width = (answered / questions.length * 100) + '%';
+  }
+
+  function getLevelColor(val) {
+    if (val <= 1.5) return 'var(--level1)';
+    if (val <= 2.5) return 'var(--level2)';
+    if (val <= 3.5) return 'var(--level3)';
+    if (val <= 4.5) return 'var(--level4)';
+    return 'var(--level5)';
+  }
+
+  function getLevelClass(val) {
+    if (val <= 1.5) return 'level-1';
+    if (val <= 2.5) return 'level-2';
+    if (val <= 3.5) return 'level-3';
+    if (val <= 4.5) return 'level-4';
+    return 'level-5';
+  }
+
+  function getLevelName(val) {
+    if (val <= 1.5) return levelNames[0];
+    if (val <= 2.5) return levelNames[1];
+    if (val <= 3.5) return levelNames[2];
+    if (val <= 4.5) return levelNames[3];
+    return levelNames[4];
+  }
+
+  function updateResults() {
+    var answered = answers.filter(function(a) { return a > 0; }).length;
+    var section = document.getElementById('resultsSection');
+
+    if (answered === 0) {
+      section.classList.remove('visible');
+      return;
+    }
+
+    section.classList.add('visible');
+
+    var barsContainer = document.getElementById('resultBars');
+    barsContainer.innerHTML = '';
+
+    var sum = 0;
+    var count = 0;
+
+    answers.forEach(function(val, i) {
+      if (val === 0) return;
+      sum += val;
+      count++;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'result-bar-wrap';
+
+      var header = document.createElement('div');
+      header.className = 'result-bar-header';
+
+      var labelEl = document.createElement('span');
+      labelEl.className = 'result-bar-label';
+      labelEl.textContent = (i + 1) + '. ' + shortLabels[i];
+
+      var valueEl = document.createElement('span');
+      valueEl.className = 'result-bar-value';
+      valueEl.textContent = val + ' — ' + levelNames[val - 1];
+      valueEl.style.color = getLevelColor(val);
+
+      header.appendChild(labelEl);
+      header.appendChild(valueEl);
+
+      var bar = document.createElement('div');
+      bar.className = 'result-bar';
+
+      var fill = document.createElement('div');
+      fill.className = 'result-bar-fill';
+      fill.style.background = getLevelColor(val);
+
+      bar.appendChild(fill);
+      wrap.appendChild(header);
+      wrap.appendChild(bar);
+      barsContainer.appendChild(wrap);
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = (val / 5 * 100) + '%';
+        });
+      });
+    });
+
+    var avg = count > 0 ? (sum / count) : 0;
+    var avgRounded = Math.round(avg * 100) / 100;
+
+    var totalBlock = document.getElementById('totalBlock');
+    totalBlock.className = 'total-block ' + getLevelClass(avg);
+    document.getElementById('totalScore').textContent = avgRounded.toFixed(2);
+    document.getElementById('totalLevel').textContent = getLevelName(avg);
+
+    drawRadar(answers);
+
+  /* ===== Save result to localStorage ===== */
+  try {
+    var _avgVal = parseFloat(document.getElementById('totalScore').textContent);
+    var _nameVal1 = (document.getElementById('studentName') || {}).value || '';
+    if (!isNaN(_avgVal)) {
+      localStorage.setItem('steam_block1', JSON.stringify({
+        displayScore: _avgVal.toFixed(2),
+        normalized: _avgVal / 5
+      }));
+    }
+    if (_nameVal1.trim()) localStorage.setItem('steam_user_name', _nameVal1.trim());
+  } catch(e) {}
+
+  }
+
+  /* ===== Radar / Spider Chart ===== */
+  function drawRadar(data) {
+    var canvas = document.getElementById('radarCanvas');
+    var dpr = window.devicePixelRatio || 1;
+    var cssSize = 600;
+    canvas.width = cssSize * dpr;
+    canvas.height = cssSize * dpr;
+    canvas.style.width = cssSize + 'px';
+    canvas.style.height = cssSize + 'px';
+
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssSize, cssSize);
+
+    var isDark = document.documentElement.classList.contains('dark');
+    var n = data.length;
+    var cx = cssSize / 2;
+    var cy = cssSize / 2;
+    var maxR = 180;
+    var levels = 5;
+    var angleStep = (2 * Math.PI) / n;
+    var startAngle = -Math.PI / 2;
+
+    var gridColor = isDark ? 'rgba(160,160,200,0.15)' : 'rgba(60,80,120,0.1)';
+    var gridStroke = isDark ? 'rgba(160,160,200,0.25)' : 'rgba(60,80,120,0.18)';
+    var axisColor = isDark ? 'rgba(160,160,200,0.3)' : 'rgba(60,80,120,0.2)';
+    var labelColor = isDark ? '#A8A5B8' : '#5A5A5A';
+    var numberColor = isDark ? '#6E6B7F' : '#aaa';
+    var accentRGB = isDark ? '123,167,204' : '61,90,128';
+
+    var levelColors = ['#E63946', '#F4845F', '#F9C74F', '#90BE6D', '#2D9F3C'];
+
+    /* Grid pentagons */
+    for (var lv = 1; lv <= levels; lv++) {
+      var r = (maxR / levels) * lv;
+      ctx.beginPath();
+      for (var j = 0; j < n; j++) {
+        var a = startAngle + angleStep * j;
+        var px = cx + r * Math.cos(a);
+        var py = cy + r * Math.sin(a);
+        if (j === 0) { ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+      }
+      ctx.closePath();
+      ctx.fillStyle = gridColor;
+      ctx.fill();
+      ctx.strokeStyle = gridStroke;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      /* Level number on top axis */
+      var numX = cx + 8;
+      var numY = cy - (maxR / levels) * lv + 4;
+      ctx.font = '600 10px Nunito, sans-serif';
+      ctx.fillStyle = numberColor;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(lv, numX, numY);
+    }
+
+    /* Axis lines */
+    for (var k = 0; k < n; k++) {
+      var aAxis = startAngle + angleStep * k;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + maxR * Math.cos(aAxis), cy + maxR * Math.sin(aAxis));
+      ctx.strokeStyle = axisColor;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    /* Data polygon */
+    var hasData = data.some(function(v) { return v > 0; });
+    if (hasData) {
+      ctx.beginPath();
+      for (var d = 0; d < n; d++) {
+        var val = data[d] || 0;
+        var rd = (maxR / levels) * val;
+        var ad = startAngle + angleStep * d;
+        var dpx = cx + rd * Math.cos(ad);
+        var dpy = cy + rd * Math.sin(ad);
+        if (d === 0) { ctx.moveTo(dpx, dpy); } else { ctx.lineTo(dpx, dpy); }
+      }
+      ctx.closePath();
+
+      var gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+      gradient.addColorStop(0, 'rgba(' + accentRGB + ', 0.35)');
+      gradient.addColorStop(1, 'rgba(' + accentRGB + ', 0.08)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(' + accentRGB + ', 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      /* Data points */
+      for (var p = 0; p < n; p++) {
+        var valP = data[p] || 0;
+        if (valP === 0) continue;
+        var rp = (maxR / levels) * valP;
+        var ap = startAngle + angleStep * p;
+        var ppx = cx + rp * Math.cos(ap);
+        var ppy = cy + rp * Math.sin(ap);
+
+        ctx.beginPath();
+        ctx.arc(ppx, ppy, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = levelColors[valP - 1];
+        ctx.fill();
+        ctx.strokeStyle = isDark ? '#2A2D45' : '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    /* Labels */
+    var radarLabels = [
+      'Целостные\nпредставления',
+      'Межпредметные\nсвязи',
+      'Научно-исслед.\nдеятельность',
+      'Проектное\nобучение',
+      'Научно-техн.\nтворчество',
+      'Проблемное\nобучение',
+      'Инженерно-техн.\nдеятельность',
+      'Практико-ориент.\nобучение',
+      'Познание\nчерез НТП',
+      'Проф.\nсовершенств.'
+    ];
+
+    ctx.font = '700 11px Nunito, sans-serif';
+    ctx.fillStyle = labelColor;
+
+    for (var lb = 0; lb < n; lb++) {
+      var aLb = startAngle + angleStep * lb;
+      var labelR = maxR + 52;
+      var lx = cx + labelR * Math.cos(aLb);
+      var ly = cy + labelR * Math.sin(aLb);
+
+      var cosA = Math.cos(aLb);
+      if (cosA < -0.1) {
+        ctx.textAlign = 'right';
+      } else if (cosA > 0.1) {
+        ctx.textAlign = 'left';
+      } else {
+        ctx.textAlign = 'center';
+      }
+      ctx.textBaseline = 'middle';
+
+      var lines = radarLabels[lb].split('\n');
+      var lineH = 13;
+      var totalH = lines.length * lineH;
+      for (var li = 0; li < lines.length; li++) {
+        ctx.fillText(lines[li], lx, ly - totalH / 2 + lineH * li + lineH / 2);
+      }
+    }
+  }
+
+  /* Save as image */
+  document.getElementById('btnSave').addEventListener('click', function() {
+    var resultsCard = document.getElementById('resultsCard');
+
+    html2canvas(resultsCard, {
+      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim(),
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      borderRadius: 20
+    }).then(function(canvas) {
+      var link = document.createElement('a');
+      link.download = 'STEAM_результаты.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast();
+    }).catch(function() {
+      /* fallback */
+    });
+  });
+
+  function showToast() {
+    var toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+})();
+</script>
+</body>
+</html>

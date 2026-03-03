@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ru">
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Тест: STEAM-образование</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+ <style>
+ :root {
+   --bg: #f5f0e8;
+ --bg2: #ede6d8;
+ --card: #ffffff;
+  --card-border: rgba(0,0,0,0.06);
+  --text: #1a1a2e;
+ --text2: #4a4a6a;
+  --text3: #7a7a9a;
+--primary: #1e3a5f;
+  --primary-light: #2a5080;
+  --accent: #c9534a;
+   --accent2: #e9c46a;
+  --teal: #2ec4b6;
+  --success: #27ae60;
+   --warning: #f39c12;
+   --danger: #e74c3c;
+  --option-bg: #f8f5ef;
+  --option-border: #e0d8c8;
+--option-hover: #efe9db;
+  --option-selected: #e8f4f8;
+   --option-selected-border: #2ec4b6;
+   --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+ }
+.dark {
+   --bg: #0f1923;
+  --bg2: #162232;
+   --card: #1c2d3f;
+  --card-border: rgba(255,255,255,0.06);
+   --text: #e8e6e3;
+  --text2: #a8b4c0;
+  --text3: #6a7a8a;
+   --primary: #4a90d9;
+   --primary-light: #5aa0e9;
+   --accent: #e06050;
+   --option-bg: #1a2a3a;
+   --option-border: #2a3a4a;
+  --option-hover: #223448;
+   --option-selected: #1a3040;
+  --option-selected-border: #2ec4b6;
+ --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+ }
+ * { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+   font-family: 'Nunito Sans', sans-serif;
+  background: var(--bg);
+   color: var(--text);
+   min-height: 100vh;
+   line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+ }
+ body::before {
+  content: '';
+position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+   background:
+    radial-gradient(circle at 15% 20%, rgba(46,196,182,0.06) 0%, transparent 50%),
+     radial-gradient(circle at 85% 80%, rgba(233,196,106,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(30,58,95,0.03) 0%, transparent 70%);
+   pointer-events: none;
+   z-index: 0;
+ }
+ .dark body::before {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(46,196,182,0.04) 0%, transparent 50%),
+ radial-gradient(circle at 85% 80%, rgba(233,196,106,0.03) 0%, transparent 50%);
+ }
+h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
+ .container {
+  max-width: 800px;
+ margin: 0 auto;
+  padding: 16px;
+  position: relative;
+ z-index: 1;
+ }
+ .card {
+  background: var(--card);
+   border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+   box-shadow: var(--shadow);
+   padding: 32px;
+  margin-bottom: 20px;
+  transition: background 0.3s, border-color 0.3s;
+ }
+@media (max-width: 600px) {
+  .card { padding: 20px 16px; }
+}
+
+/* Welcome screen */
+.welcome-header {
+  text-align: center;
+  padding: 40px 20px 24px;
+}
+.welcome-icon {
+  width: 80px; height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--primary), var(--teal));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(46,196,182,0.3);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.welcome-header h1 {
+  font-size: 28px;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+.welcome-header p {
+  color: var(--text2);
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.info-item {
+  background: var(--option-bg);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+  border: 1px solid var(--option-border);
+}
+.info-item .num {
+  font-family: 'Lora', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--teal);
+}
+.info-item .label {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.input-group {
+  margin: 24px 0;
+}
+.input-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 15px;
+}
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--option-border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: 'Nunito Sans', sans-serif;
+  background: var(--option-bg);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.input-group input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(46,196,182,0.15);
+}
+.input-group input::placeholder { color: var(--text3); }
+.input-error { border-color: var(--accent) !important; }
+.error-msg {
+  color: var(--accent);
+  font-size: 13px;
+  margin-top: 6px;
+  display: none;
+}
+.error-msg.show { display: block; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(30,58,95,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(30,58,95,0.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: var(--option-bg);
+  color: var(--text);
+  border: 2px solid var(--option-border);
+}
+.btn-secondary:hover { background: var(--option-hover); }
+.btn-success {
+  background: linear-gradient(135deg, #27ae60, #2ec4b6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(39,174,96,0.3);
+}
+.btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(39,174,96,0.4); }
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), #d04a40);
+  color: #fff;
+}
+.btn-full { width: 100%; }
+
+/* Progress */
+.progress-bar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  padding: 12px 0 8px;
+  margin-bottom: 8px;
+  transition: background 0.3s;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text2);
+}
+.progress-info strong { color: var(--primary); }
+.progress-track {
+  height: 6px;
+  background: var(--option-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--accent2));
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Section header */
+.section-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--primary), var(--teal));
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 20px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.section-desc {
+  color: var(--text2);
+  font-size: 14px;
+}
+
+/* Questions */
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.3s ease-out both;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.q-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.q-multi-badge {
+  display: inline-block;
+  background: rgba(46,196,182,0.12);
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.q-text {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.q-context {
+  background: var(--option-bg);
+  border-left: 3px solid var(--teal);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.options-list { list-style: none; }
+.option-item {
+  position: relative;
+  margin-bottom: 8px;
+}
+.option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--option-bg);
+  border: 2px solid var(--option-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.option-label:hover {
+  background: var(--option-hover);
+  border-color: var(--teal);
+}
+.option-label.selected {
+  background: var(--option-selected);
+  border-color: var(--option-selected-border);
+}
+.option-input {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+}
+.option-text { flex: 1; }
+
+/* Navigation */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.nav-row .btn { min-width: 140px; }
+@media (max-width: 500px) {
+  .nav-row { flex-direction: column; }
+  .nav-row .btn { width: 100%; }
+}
+
+/* Results */
+.results-header {
+  text-align: center;
+  padding: 20px 0;
+}
+.results-header h2 {
+  font-size: 26px;
+  color: var(--primary);
+}
+.result-level-wrap {
+  text-align: center;
+  padding: 28px 0 20px;
+}
+.result-level-badge {
+  display: inline-block;
+  padding: 10px 32px;
+  border-radius: 30px;
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.level-high { background: linear-gradient(135deg, #27ae60, #2ecc71); box-shadow: 0 4px 16px rgba(39,174,96,0.3); }
+.level-mid { background: linear-gradient(135deg, #f39c12, #e67e22); box-shadow: 0 4px 16px rgba(243,156,18,0.3); }
+.level-low { background: linear-gradient(135deg, #e74c3c, #c0392b); box-shadow: 0 4px 16px rgba(231,76,60,0.3); }
+.result-score {
+  font-size: 48px;
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  color: var(--primary);
+}
+.result-score span { font-size: 24px; color: var(--text3); }
+.result-percent {
+  font-size: 16px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+.result-fio {
+  font-size: 18px;
+  color: var(--text);
+  margin-top: 14px;
+  font-weight: 600;
+}
+.result-date {
+  font-size: 14px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.section-results {
+  margin-top: 20px;
+}
+.section-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+.section-result-item:last-child { border-bottom: none; }
+.sr-label {
+  flex-shrink: 0;
+  width: 40px;
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary);
+}
+.sr-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: var(--option-bg);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.sr-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.sr-score {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  width: 60px;
+  text-align: right;
+}
+.actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+@media (max-width: 500px) {
+  .actions-row { flex-direction: column; }
+  .actions-row .btn { width: 100%; }
+}
+
+/* Cert card for image capture */
+.cert-card {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  color: #1a1a2e;
+}
+.cert-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 8px;
+  background: linear-gradient(90deg, #1e3a5f, #2ec4b6, #e9c46a, #c9534a);
+}
+.cert-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 8px;
+  background: linear-gradient(90deg, #c9534a, #e9c46a, #2ec4b6, #1e3a5f);
+}
+.cert-header { text-align: center; margin-bottom: 24px; }
+.cert-header h3 {
+  font-family: 'Lora', serif;
+  font-size: 24px;
+  color: #1e3a5f;
+  margin-bottom: 4px;
+}
+.cert-header p { color: #6a7a8a; font-size: 14px; }
+.cert-fio {
+  text-align: center;
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  padding: 12px 0;
+  border-bottom: 2px solid #e0d8c8;
+  margin-bottom: 20px;
+}
+.cert-level {
+  text-align: center;
+  margin: 20px 0;
+}
+.cert-level-badge {
+  display: inline-block;
+  padding: 8px 28px;
+  border-radius: 24px;
+  font-family: 'Lora', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.cert-score-big {
+  text-align: center;
+  font-family: 'Lora', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 8px 0;
+}
+.cert-score-big em {
+  font-size: 20px;
+  font-style: normal;
+  color: #7a7a9a;
+}
+.cert-sections { margin: 20px 0; }
+.cert-section-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+}
+.cert-section-label {
+  width: 36px;
+  font-weight: 700;
+  color: #1e3a5f;
+  font-family: 'Lora', serif;
+}
+.cert-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: #f0ebe3;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.cert-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+.cert-section-score {
+  width: 50px;
+  text-align: right;
+  font-weight: 700;
+  color: #4a4a6a;
+}
+.cert-footer {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e0d8c8;
+  font-size: 13px;
+  color: #7a7a9a;
+}
+
+/* Screen management */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Custom modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-box {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: scaleIn 0.2s;
+}
+@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box p { margin-bottom: 20px; font-size: 15px; color: var(--text); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Saving indicator */
+.saving-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.saving-box {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 32px 40px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 4px solid var(--option-border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--text3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+
+/* Animate question cards on load */
+.question-card:nth-child(1) { animation-delay: 0.05s; }
+.question-card:nth-child(2) { animation-delay: 0.1s; }
+.question-card:nth-child(3) { animation-delay: 0.15s; }
+.question-card:nth-child(4) { animation-delay: 0.2s; }
+.question-card:nth-child(5) { animation-delay: 0.25s; }
+.question-card:nth-child(6) { animation-delay: 0.3s; }
+.question-card:nth-child(7) { animation-delay: 0.35s; }
+
+/* Review styles */
+.review-correct { border-left: 4px solid var(--success); }
+.review-incorrect { border-left: 4px solid var(--danger); }
+.review-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.tag-correct { background: rgba(39,174,96,0.12); color: var(--success); }
+.tag-incorrect { background: rgba(231,76,60,0.12); color: var(--danger); }
+.tag-skipped { background: rgba(122,122,154,0.12); color: var(--text3); }
+
+  /* ===== STEAM NAV (injected) ===== */
+  .steam-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(15,22,36,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+  }
+  .steam-nav-logo {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #5b9bd5;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+  .steam-nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .steam-nav-links a {
+    color: #8fa3c0;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: block;
+  }
+  .steam-nav-links a:hover {
+    color: #eef2f8;
+    background: rgba(255,255,255,0.08);
+  }
+  .steam-nav-links a.steam-active {
+    color: white !important;
+    background: #3d5a80 !important;
+  }
+  @media (max-width: 800px) {
+    .steam-nav-links { display: none; }
+    .steam-nav { padding: 12px 20px; }
+  }
+
+</style>
+</head>
+<body style="padding-top:54px;">
+<nav class="steam-nav">
+  <div class="steam-nav-logo">STEAM</div>
+  <ul class="steam-nav-links">
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="1_motivacion.html" id="snav1">Мотивационно-личностный</a></li>
+    <li><a href="2_kognitivny.html" id="snav2" class="steam-active">Когнитивный</a></li>
+    <li><a href="3_umeniya.html" id="snav3">Деятельностный: умения</a></li>
+    <li><a href="4_sposob.html" id="snav4">Деятельностный: способы</a></li>
+    <li><a href="summary.html">Сводные результаты</a></li>
+  </ul>
+</nav>
+
+
+<!-- Welcome Screen -->
+<div id="welcomeScreen" class="screen active">
+  <div class="container">
+    <div class="welcome-header">
+      <div class="welcome-icon">🔬</div>
+      <h1>Определение уровней сформированности компонентов STEAM-компетентности</h1>
+      <p>Когнитивный</p>
+    </div>
+    <div class="card">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="num">30</div>
+          <div class="label">Вопросов</div>
+        </div>
+        <div class="info-item">
+          <div class="num">5</div>
+          <div class="label">Блоков</div>
+        </div>
+        <div class="info-item">
+          <div class="num">3</div>
+          <div class="label">Уровня</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="fioInput">ФИО (Фамилия Имя Отчество)</label>
+        <input type="text" id="fioInput" placeholder="Введите ваше ФИО" autocomplete="name">
+        <div class="error-msg" id="fioError">Пожалуйста, введите ваше ФИО</div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="startQuiz()">
+        Начать тестирование →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quizScreen" class="screen">
+  <div class="container">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span>Блок <strong id="currentSection">1</strong> из <strong>5</strong></span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="sectionHeader" class="card" style="margin-bottom:16px"></div>
+    <div id="questionsContainer"></div>
+    <div class="nav-row" id="navRow"></div>
+  </div>
+</div>
+
+<!-- Results Screen -->
+<div id="resultsScreen" class="screen">
+  <div class="container">
+    <div class="results-header">
+      <h2>Результаты тестирования</h2>
+    </div>
+
+    <!-- Visible results card -->
+    <div class="card" id="resultsCard">
+      <div class="result-fio" id="resultFio"></div>
+      <div class="result-date" id="resultDate"></div>
+      <div class="result-level-wrap">
+        <div class="result-level-badge" id="resultBadge"></div>
+        <div class="result-score" id="resultScore"></div>
+        <div class="result-percent" id="resultPercent"></div>
+      </div>
+      <div class="section-results" id="sectionResults"></div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn btn-success" onclick="saveAsImage()">
+        📸 Сохранить результат
+      </button>
+      <button class="btn btn-secondary" onclick="restartQuiz()">
+        🔄 Пройти заново
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden cert card for image capture -->
+<div id="certContainer" style="position:absolute;left:-9999px;top:0;width:600px;">
+  <div class="cert-card" id="certCard"></div>
+</div>
+
+<script>
+/* ============ QUIZ DATA ============ */
+const sections = [
+  {
+    id: "К1",
+    title: "Сущность и роль STEAM-образования",
+    full: "Сущность и роль STEAM-образования, пути его реализации",
+    questions: [
+      {
+        q: "Выберите все правильные варианты ответа, учитывая, что в основе STEAM лежат несколько фундаментальных принципов:",
+        o: [
+          "усиление предметоцентризма",
+          "практико-ориентированность",
+          "межпредметность",
+          "индивидуальная образовательная траектория",
+          "фокус исключительно на естественно-научных дисциплинах"
+        ],
+        c: [1,2,3], m: true
+      },
+      {
+        q: "К преимуществам STEAM-образования исследователи относят:",
+        o: [
+          "вовлеченность обучающихся",
+          "сотрудничество",
+          "формирование научной картины мира",
+          "практико-ориентированность",
+          "развитие критического мышления",
+          "доминирование предметоцентризма"
+        ],
+        c: [0,1,2,3,4], m: true
+      },
+      {
+        q: "STEAM-подход базируется на:",
+        o: [
+          "межпредметной интеграции",
+          "мультипредметной интеграции",
+          "транспредметной интеграции",
+          "монодисциплинарной основе",
+          "все ответы верны"
+        ],
+        c: [0,1,2], m: true
+      },
+      {
+        q: "Владение какими педагогическими технологиями в большей степени важны для STEAM-педагога:",
+        o: [
+          "игровыми",
+          "проблемного обучения",
+          "проектного обучения",
+          "интеграции в образовании",
+          "применения информационно-коммуникационных средств в предметном обучении",
+          "постановки естественно-научного эксперимента",
+          "монологического изложения материала педагогом",
+          "организации исследовательской деятельности учащихся"
+        ],
+        c: [0,1,2,3,4,5,7], m: true
+      },
+      {
+        q: "К сущностным характеристикам STEAM-образования можно отнести:",
+        o: [
+          "обучение профессиям на основе детской любознательности",
+          "приоритетность опытной и исследовательской деятельности обучающихся",
+          "призыв «сделай сам»",
+          "практико-ориентированность",
+          "интеграция исключительно в основной образовательный процесс",
+          "включение элементов научно-технического творчества"
+        ],
+        c: [0,1,2,3,5], m: true
+      },
+      {
+        q: "В основе STEAM-проектов лежит интеграция:",
+        o: [
+          "научно-технического творчества и теоретического анализа",
+          "научно-исследовательской и научно-технического творчества обучающихся",
+          "научной и исследовательской деятельности обучающихся",
+          "глубоко теоретического анализа и абстракции",
+          "научно-исследовательской и экспериментально-опытной деятельности обучающихся"
+        ],
+        c: [1], m: false
+      }
+    ]
+  },
+  {
+    id: "К2",
+    title: "Научные законы и метапонятия",
+    full: "Осведомленность о научных законах, идеях (метапонятиях), пронизывающих все STEAM-блоки",
+    questions: [
+      {
+        q: "Что бы вы отнесли к «большим идеям»:",
+        o: [
+          "теорию движения литосферных плит",
+          "поток энергии и веществ в живых системах",
+          "эволюционное учение",
+          "атомно-молекулярную теорию",
+          "производство углеводородного топлива"
+        ],
+        c: [0,1,2,3], m: true
+      },
+      {
+        q: "Изучение теории литосферных плит традиционно построено на географических понятиях: земная кора, литосферные плиты, мантия, движение вещества, спрединг, субдукция.\n\nКакие межпредметные понятия объединяют эту теорию с физикой, математикой?\n\nа) скорость\nб) конвекция\nв) энергия\nг) плотность вещества\nд) геоид\nе) магнитное склонение\nж) коэффициент трения",
+        o: ["а + б + в", "а + б", "б + г + ж", "в + д + е"],
+        c: [0], m: false
+      },
+      {
+        q: "Изучение атомно-молекулярной теории традиционно построено на химических понятиях: атомы, ионы, химический элемент, простые вещества, сложные вещества.\n\nКакие межпредметные понятия объединяют это учение с физикой, математикой?\n\nа) молекула\nб) движение\nв) трансформация\nг) заряд\nд) симметрия\nе) агрегатное состояние\nж) масса покоя",
+        o: ["а + б + в", "а + б", "б + г + ж", "в + д + е"],
+        c: [0], m: false
+      },
+      {
+        q: "Изучение эволюционной теории традиционно построено на биологических понятиях: наследственность, изменчивость, борьба за существование, естественный отбор.\n\nКакие межпредметные понятия объединяют эту теорию с географией?\n\nа) адаптация\nб) дивергенция\nв) ареал\nг) миграция\nд) конвергенция\nе) широтная зональность\nж) биогеохимический цикл",
+        o: ["а + б + д", "а + б + ж", "б + в + з"],
+        c: [0], m: false
+      },
+      {
+        q: "Изучение законов силы и движения традиционно построено на физических понятиях: масса, сопротивление, траектория, путь, время, вес.\n\nКакие межпредметные понятия объединяют эти законы с химией и географией?\n\nа) ускорение\nб) растворимость\nв) тектоническое давление\nг) плотность\nд) упругость\nе) температура кипения\nж) атмосферная циркуляция\nз) электропроводность",
+        o: ["а + б + в", "а + г + д", "б + г + з"],
+        c: [0], m: false
+      },
+      {
+        q: "Изучение закономерностей потока энергии и вещества традиционно построено на биологических понятиях: цикличность, расход, приход, фотосинтез, разложение, трансформация, органическое и неорганическое вещество, пищевые цепи, продуценты, консументы, сапротрофы.\n\nКакие межпредметные понятия объединяют эту «большую идею» с географией?\n\nа) круговорот\nб) солнечная энергия\nв) растительные сообщества\nг) биом\nд) испарение\nе) минерализация\nж) атмосферные фронты",
+        o: ["г + д + е", "ж + з + б", "а + б + в"],
+        c: [2], m: false
+      }
+    ]
+  },
+  {
+    id: "К3",
+    title: "Методы реализации интегративных связей",
+    full: "Методы и приемы, способствующие реализации интегративных связей в содержании STEAM-блоков",
+    questions: [
+      {
+        q: "Межпредметные связи – это:",
+        o: [
+          "система, при которой для более прочного усвоения материала используется содержание смежных учебных предметов",
+          "система, при которой для более прочного усвоения материала используется содержание одного учебного предмета",
+          "посещение уроков других педагогов с целью ознакомления с содержанием занятия",
+          "обмен планами-конспектами уроков для использования на уроках по своему учебному предмету",
+          "система, при которой для более прочного усвоения материала используются опыты и эксперименты"
+        ],
+        c: [0], m: false
+      },
+      {
+        q: "К направлениям реализации интегративного подхода в общем среднем образовании можно отнести:\n\nа) комплексное изучение одного и того же объекта разными учебными предметами\nб) изучение разных объектов методами одного учебного предмета\nв) использование одного объекта на разных этапах изучения какой-либо предметной области",
+        o: ["а + в", "б + в", "а + б + в"],
+        c: [2], m: false
+      },
+      {
+        q: "Основой конструкции логико-смысловой модели в STEAM-образовании является:",
+        o: [
+          "линейные координаты",
+          "опорно-узловая система координат",
+          "направляющие",
+          "последовательный ассоциативный ряд",
+          "логический модуль"
+        ],
+        c: [1], m: false
+      },
+      {
+        q: "К направлениям реализации интегративного подхода в общем среднем образовании можно отнести:\n\nа) комплексное изучение одного и того же объекта разными учебными предметами\nб) изучение конкретного объекта в рамках одной темы какого-либо учебного предмета\nв) использование одного объекта на разных этапах изучения какой-либо предметной области",
+        o: ["а + в", "в + б", "а + б + в"],
+        c: [0], m: false
+      },
+      {
+        q: "Способ конструирования информации, где главная тема находится в центре листа, а связанные с ней понятия располагаются вокруг в виде древовидной схемы:",
+        o: [
+          "граф",
+          "семантическая сеть",
+          "дерево мыслей",
+          "логико-смысловая модель",
+          "интеллект-карта"
+        ],
+        c: [4], m: false
+      },
+      {
+        q: "Узловые точки основных образовательных областей, благодаря которым существует реальная область познания и конструируется система знаний о них — это:",
+        o: [
+          "универсальные объекты",
+          "мета-идеи",
+          "большие идеи",
+          "фундаментальные образовательные объекты",
+          "сквозные понятия"
+        ],
+        c: [3], m: false
+      }
+    ]
+  },
+  {
+    id: "К4",
+    title: "Организация учебно-методической работы",
+    full: "Основные принципы организации учебно-методической работы по реализации межпредметных связей и интеграции в STEAM-образовании",
+    questions: [
+      {
+        q: "Документ, обеспечивающий методически правильное планирование учебных занятий в соответствии с рабочей программой — это:",
+        o: [
+          "расписание учебных предметов",
+          "календарно-тематический план",
+          "учебно-методическое пособие",
+          "методические рекомендации",
+          "план-конспект"
+        ],
+        c: [1], m: false
+      },
+      {
+        q: "Синхронистические таблицы — это:\n\nа) визуальное представление межпредметных связей в виде таблицы между понятиями и явлениями, которые рассматриваются разными учебными предметами в одно и то же время\nб) визуальное представление межпредметных связей в виде таблицы при изучении какой-либо темы, рассматриваемой разными учебными предметами\nв) визуальное представление межпредметных связей в виде таблицы, в которой в строках указаны временные рамки изучения того или иного понятия разными учебными предметами",
+        o: ["а + б", "а + б + в"],
+        c: [1], m: false
+      },
+      {
+        q: "Спиралевидная организация образовательного процесса в логике STEAM основана на интеграции, которая предполагает:",
+        o: [
+          "постепенное усложнение, количественное и качественное изменение видов деятельности обучающегося на уроке",
+          "наслоение различных видов деятельности",
+          "постепенное нарастание, количественное и качественное изменение деятельности, в которую включен учащийся",
+          "раскрытие ценности объективного мира через противоположности, познание целого через части и т.п.",
+          "использование одного вида деятельности, в которую органично вплетаются другие: познавательные, слушание музыки, восприятие живописи и др."
+        ],
+        c: [2], m: false
+      },
+      {
+        q: "Пластообразная организация образовательного процесса в логике STEAM основана на интеграции, которая предполагает:",
+        o: [
+          "постепенное усложнение, количественное и качественное изменение видов деятельности обучающегося на уроке",
+          "наслоение различных видов деятельности",
+          "постепенное нарастание, количественное и качественное изменение деятельности, в которую включен учащийся",
+          "раскрытие ценности объективного мира через противоположности, познание целого через части и т.п.",
+          "использование одного вида деятельности, в которую органично вплетаются другие: познавательные, слушание музыки, восприятие живописи и др."
+        ],
+        c: [1], m: false
+      },
+      {
+        q: "Контрастная организация образовательного процесса в логике STEAM основана на интеграции, которая предполагает:",
+        o: [
+          "постепенное усложнение, количественное и качественное изменение видов деятельности обучающегося на уроке",
+          "наслоение различных видов деятельности",
+          "постепенное нарастание, количественное и качественное изменение деятельности, в которую включен учащийся",
+          "раскрытие ценности объективного мира через противоположности, познание целого через части и т.п.",
+          "использование одного вида деятельности, в которую органично вплетаются другие: познавательные, слушание музыки, восприятие живописи и др."
+        ],
+        c: [3], m: false
+      },
+      {
+        q: "Взаимопроникающая организация образовательного процесса в логике STEAM основана на интеграции, которая предполагает:",
+        o: [
+          "постепенное усложнение, количественное и качественное изменение видов деятельности обучающегося на уроке",
+          "наслоение различных видов деятельности",
+          "постепенное нарастание, количественное и качественное изменение деятельности, в которую включен учащийся",
+          "раскрытие ценности объективного мира через противоположности, познание целого через части и т.п.",
+          "использование одного вида деятельности, в которую органично вплетаются другие: познавательные, слушание музыки, восприятие живописи и др."
+        ],
+        c: [4], m: false
+      }
+    ]
+  },
+  {
+    id: "К5",
+    title: "Проектная и исследовательская деятельность",
+    full: "Требования к организации проектной, научно-исследовательской деятельности и проблемного обучения в STEAM-образовании",
+    questions: [
+      {
+        q: "Поставить учебную проблему — значит:",
+        o: [
+          "назвать тему урока",
+          "задать классу вопрос",
+          "поставить цель",
+          "помочь ученикам сформулировать тему урока или вопрос для исследования",
+          "выявить противоречие между фактическими и имеющимися у учащихся представлениями"
+        ],
+        c: [3,4], m: true
+      },
+      {
+        q: "Формами предъявления учебной проблемы могут быть:",
+        o: [
+          "проблемная задача",
+          "проблемный вопрос",
+          "проблемная ситуация",
+          "проблемный анализ",
+          "проблемное задание"
+        ],
+        c: [0,1,2,4], m: true
+      },
+      {
+        q: "Этап проблемного обучения, на котором проводится актуализация знаний, которые необходимы для того, чтобы обучающиеся могли решить проблему, называется:",
+        o: [
+          "создание проблемной ситуации",
+          "подготовка к восприятию проблемы",
+          "мотивация",
+          "формулирование проблемы",
+          "рефлексия и обратная связь"
+        ],
+        c: [1], m: false
+      },
+      {
+        q: "Научное предположение о состоянии объекта, о структуре связей между составляющими его элементами — это:",
+        o: [
+          "гипотеза",
+          "задача",
+          "цель",
+          "проблема",
+          "все ответы верны"
+        ],
+        c: [0], m: false
+      },
+      {
+        q: "Доска проекта, согласно eduScrum-технологии, включает:",
+        o: [
+          "график прогресса",
+          "графу «Выполнено»",
+          "графу «Сделано»",
+          "графу «Выполняется»",
+          "все вышеназванные варианты"
+        ],
+        c: [4], m: false
+      },
+      {
+        q: "Выберите вариант, где верно представлена последовательность типов STEAM-проектов в зависимости от их сложности и возрастных особенностей обучающихся:",
+        o: [
+          "проект-проба → дизайн-проект → проект-идея → проект-изобретение",
+          "проект-проба → проект-идея → дизайн-проект → проект-изобретение",
+          "дизайн-проект → проект-проба → проект-идея → проект-изобретение",
+          "проект-изобретение → дизайн-проект → проект-идея → проект-проба",
+          "проект-изобретение → дизайн-проект → проект-проба → проект-идея"
+        ],
+        c: [1], m: false
+      }
+    ]
+  }
+];
+
+/* ============ STATE ============ */
+let currentSectionIdx = 0;
+let userAnswers = {};
+let userName = "";
+
+function getAnswerKey(si, qi) {
+  return si + "_" + qi;
+}
+
+/* ============ DARK MODE ============ */
+if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+  document.documentElement.classList.add("dark");
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
+  if (e.matches) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+});
+
+/* ============ NAVIGATION ============ */
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(function(s) { s.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function startQuiz() {
+  var fio = document.getElementById("fioInput").value.trim();
+  if (!fio) {
+    document.getElementById("fioInput").classList.add("input-error");
+    document.getElementById("fioError").classList.add("show");
+    return;
+  }
+  document.getElementById("fioInput").classList.remove("input-error");
+  document.getElementById("fioError").classList.remove("show");
+  userName = fio;
+  currentSectionIdx = 0;
+  userAnswers = {};
+  showScreen("quizScreen");
+  renderSection();
+}
+
+function renderSection() {
+  var sec = sections[currentSectionIdx];
+  var totalQ = 0;
+  for (var i = 0; i < currentSectionIdx; i++) {
+    totalQ += sections[i].questions.length;
+  }
+  var totalAll = 0;
+  for (var j = 0; j < sections.length; j++) {
+    totalAll += sections[j].questions.length;
+  }
+  var pct = Math.round((totalQ / totalAll) * 100);
+  document.getElementById("currentSection").textContent = currentSectionIdx + 1;
+  document.getElementById("progressPercent").textContent = pct + "%";
+  document.getElementById("progressFill").style.width = pct + "%";
+
+  var headerHTML = '<div class="section-badge">' + sec.id + ' — Блок ' + (currentSectionIdx + 1) + ' из 5</div>' +
+    '<h3 class="section-title">' + sec.title + '</h3>' +
+    '<p class="section-desc">' + sec.full + '</p>';
+  document.getElementById("sectionHeader").innerHTML = headerHTML;
+
+  var qHTML = "";
+  for (var qi = 0; qi < sec.questions.length; qi++) {
+    var question = sec.questions[qi];
+    var key = getAnswerKey(currentSectionIdx, qi);
+    var globalNum = totalQ + qi + 1;
+    var inputType = question.m ? "checkbox" : "radio";
+    var inputName = "q_" + currentSectionIdx + "_" + qi;
+
+    qHTML += '<div class="question-card">';
+    qHTML += '<span class="q-number">' + globalNum + '</span>';
+    if (question.m) {
+      qHTML += '<span class="q-multi-badge">несколько ответов</span>';
+    }
+
+    var qText = escapeHtml(question.q).replace(/\n/g, "<br>");
+    qHTML += '<div class="q-text">' + qText + '</div>';
+    qHTML += '<ul class="options-list">';
+
+    for (var oi = 0; oi < question.o.length; oi++) {
+      var isChecked = false;
+      if (userAnswers[key]) {
+        isChecked = userAnswers[key].indexOf(oi) !== -1;
+      }
+      var selectedClass = isChecked ? " selected" : "";
+      qHTML += '<li class="option-item">';
+      qHTML += '<label class="option-label' + selectedClass + '" data-key="' + key + '" data-oi="' + oi + '" data-type="' + inputType + '">';
+      qHTML += '<input class="option-input" type="' + inputType + '" name="' + inputName + '" value="' + oi + '"' + (isChecked ? " checked" : "") + '>';
+      qHTML += '<span class="option-text">' + escapeHtml(question.o[oi]) + '</span>';
+      qHTML += '</label></li>';
+    }
+
+    qHTML += '</ul></div>';
+  }
+  document.getElementById("questionsContainer").innerHTML = qHTML;
+
+  // Navigation buttons
+  var navHTML = "";
+  if (currentSectionIdx > 0) {
+    navHTML += '<button class="btn btn-secondary" onclick="prevSection()">← Назад</button>';
+  } else {
+    navHTML += '<div></div>';
+  }
+  if (currentSectionIdx < sections.length - 1) {
+    navHTML += '<button class="btn btn-primary" onclick="nextSection()">Далее →</button>';
+  } else {
+    navHTML += '<button class="btn btn-accent" onclick="showFinishConfirm()">Завершить тест ✓</button>';
+  }
+  document.getElementById("navRow").innerHTML = navHTML;
+
+  // Attach event listeners
+  document.querySelectorAll(".option-label").forEach(function(label) {
+    label.addEventListener("click", function(e) {
+      // Prevent double handling
+      if (e.target.tagName === "INPUT") return;
+      var input = label.querySelector("input");
+      var aKey = label.getAttribute("data-key");
+      var aOi = parseInt(label.getAttribute("data-oi"));
+      var aType = label.getAttribute("data-type");
+
+      if (aType === "radio") {
+        input.checked = true;
+        userAnswers[aKey] = [aOi];
+        // Update all labels in same group
+        label.closest(".options-list").querySelectorAll(".option-label").forEach(function(lbl) {
+          lbl.classList.remove("selected");
+        });
+        label.classList.add("selected");
+      } else {
+        input.checked = !input.checked;
+        if (!userAnswers[aKey]) userAnswers[aKey] = [];
+        if (input.checked) {
+          if (userAnswers[aKey].indexOf(aOi) === -1) userAnswers[aKey].push(aOi);
+          label.classList.add("selected");
+        } else {
+          userAnswers[aKey] = userAnswers[aKey].filter(function(x) { return x !== aOi; });
+          label.classList.remove("selected");
+        }
+      }
+    });
+  });
+
+  // Also handle direct input clicks
+  document.querySelectorAll(".option-input").forEach(function(input) {
+    input.addEventListener("change", function() {
+      var label = input.closest(".option-label");
+      var aKey = label.getAttribute("data-key");
+      var aOi = parseInt(label.getAttribute("data-oi"));
+      var aType = label.getAttribute("data-type");
+
+      if (aType === "radio") {
+        userAnswers[aKey] = [aOi];
+        label.closest(".options-list").querySelectorAll(".option-label").forEach(function(lbl) {
+          lbl.classList.remove("selected");
+        });
+        label.classList.add("selected");
+      } else {
+        if (!userAnswers[aKey]) userAnswers[aKey] = [];
+        if (input.checked) {
+          if (userAnswers[aKey].indexOf(aOi) === -1) userAnswers[aKey].push(aOi);
+          label.classList.add("selected");
+        } else {
+          userAnswers[aKey] = userAnswers[aKey].filter(function(x) { return x !== aOi; });
+          label.classList.remove("selected");
+        }
+      }
+    });
+  });
+
+  window.scrollTo(0, 0);
+}
+
+function prevSection() {
+  if (currentSectionIdx > 0) {
+    currentSectionIdx--;
+    renderSection();
+  }
+}
+
+function nextSection() {
+  if (currentSectionIdx < sections.length - 1) {
+    currentSectionIdx++;
+    renderSection();
+  }
+}
+
+function showFinishConfirm() {
+  // Check if all questions answered
+  var unanswered = 0;
+  for (var si = 0; si < sections.length; si++) {
+    for (var qi = 0; qi < sections[si].questions.length; qi++) {
+      var key = getAnswerKey(si, qi);
+      if (!userAnswers[key] || userAnswers[key].length === 0) {
+        unanswered++;
+      }
+    }
+  }
+  if (unanswered > 0) {
+    showModal("У вас " + unanswered + " " + pluralize(unanswered, "неотвеченный вопрос", "неотвеченных вопроса", "неотвеченных вопросов") + ". Всё равно завершить тест?", "Завершить", finishQuiz);
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  calculateResults();
+  showScreen("resultsScreen");
+}
+
+/* ============ SCORING ============ */
+function calculateResults() {
+  var totalCorrect = 0;
+  var totalQuestions = 0;
+  var sectionScores = [];
+
+  for (var si = 0; si < sections.length; si++) {
+    var sec = sections[si];
+    var secCorrect = 0;
+    for (var qi = 0; qi < sec.questions.length; qi++) {
+      totalQuestions++;
+      var key = getAnswerKey(si, qi);
+      var question = sec.questions[qi];
+      var userAns = userAnswers[key] || [];
+      var correctAns = question.c.slice().sort();
+      var userSorted = userAns.slice().sort();
+
+      if (arraysEqual(userSorted, correctAns)) {
+        secCorrect++;
+        totalCorrect++;
+      }
+    }
+    sectionScores.push({
+      id: sec.id,
+      title: sec.title,
+      correct: secCorrect,
+      total: sec.questions.length
+    });
+  }
+
+  var pct = Math.round((totalCorrect / totalQuestions) * 100);
+  var level, levelClass, levelText;
+  if (pct >= 75) {
+    level = "high";
+    levelClass = "level-high";
+    levelText = "Высокий уровень";
+  } else if (pct >= 50) {
+    level = "mid";
+    levelClass = "level-mid";
+    levelText = "Средний уровень";
+  } else {
+    level = "low";
+    levelClass = "level-low";
+    levelText = "Начальный уровень";
+  }
+
+  // Update visible results
+  document.getElementById("resultFio").textContent = userName;
+  var now = new Date();
+  var dateStr = padZero(now.getDate()) + "." + padZero(now.getMonth() + 1) + "." + now.getFullYear();
+  document.getElementById("resultDate").textContent = dateStr;
+  document.getElementById("resultBadge").className = "result-level-badge " + levelClass;
+  document.getElementById("resultBadge").textContent = levelText;
+  document.getElementById("resultScore").innerHTML = totalCorrect + " <span>/ " + totalQuestions + "</span>";
+  document.getElementById("resultPercent").textContent = pct + "% правильных ответов";
+
+  var srHTML = "";
+  for (var k = 0; k < sectionScores.length; k++) {
+    var ss = sectionScores[k];
+    var sPct = Math.round((ss.correct / ss.total) * 100);
+    var barColor;
+    if (sPct >= 75) barColor = "linear-gradient(90deg, #27ae60, #2ecc71)";
+    else if (sPct >= 50) barColor = "linear-gradient(90deg, #f39c12, #e67e22)";
+    else barColor = "linear-gradient(90deg, #e74c3c, #c0392b)";
+
+    srHTML += '<div class="section-result-item">';
+    srHTML += '<div class="sr-label">' + ss.id + '</div>';
+    srHTML += '<div class="sr-bar-wrap"><div class="sr-bar" style="width:' + sPct + '%;background:' + barColor + '"></div></div>';
+    srHTML += '<div class="sr-score">' + ss.correct + '/' + ss.total + '</div>';
+    srHTML += '</div>';
+  }
+  document.getElementById("sectionResults").innerHTML = srHTML;
+
+  // Build cert card for image
+
+  /* ===== Save result to localStorage ===== */
+  try {
+    localStorage.setItem('steam_block2', JSON.stringify({
+      displayScore: pct + '%',
+      normalized: pct / 100
+    }));
+    if (userName && userName.trim()) localStorage.setItem('steam_user_name', userName.trim());
+  } catch(e) {}
+
+  buildCertCard(totalCorrect, totalQuestions, pct, levelText, levelClass, sectionScores, dateStr);
+}
+
+function buildCertCard(total, max, pct, levelText, levelClass, sectionScores, dateStr) {
+  var certLevelBg;
+  if (levelClass === "level-high") certLevelBg = "linear-gradient(135deg, #27ae60, #2ecc71)";
+  else if (levelClass === "level-mid") certLevelBg = "linear-gradient(135deg, #f39c12, #e67e22)";
+  else certLevelBg = "linear-gradient(135deg, #e74c3c, #c0392b)";
+
+  var html = '<div class="cert-header"><h3>Результаты тестирования</h3><p>STEAM-образование</p></div>';
+  html += '<div class="cert-fio">' + escapeHtml(userName) + '</div>';
+  html += '<div class="cert-level"><div class="cert-level-badge" style="background:' + certLevelBg + '">' + levelText + '</div></div>';
+  html += '<div class="cert-score-big">' + total + ' <em>/ ' + max + ' (' + pct + '%)</em></div>';
+  html += '<div class="cert-sections">';
+
+  for (var i = 0; i < sectionScores.length; i++) {
+    var ss = sectionScores[i];
+    var sPct = Math.round((ss.correct / ss.total) * 100);
+    var barColor;
+    if (sPct >= 75) barColor = "#27ae60";
+    else if (sPct >= 50) barColor = "#f39c12";
+    else barColor = "#e74c3c";
+    html += '<div class="cert-section-row">';
+    html += '<div class="cert-section-label">' + ss.id + '</div>';
+    html += '<div class="cert-bar-wrap"><div class="cert-bar" style="width:' + sPct + '%;background:' + barColor + '"></div></div>';
+    html += '<div class="cert-section-score">' + ss.correct + '/' + ss.total + '</div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  html += '<div class="cert-footer">Дата: ' + dateStr + '</div>';
+  document.getElementById("certCard").innerHTML = html;
+}
+
+/* ============ SAVE AS IMAGE ============ */
+function saveAsImage() {
+  var overlay = document.createElement("div");
+  overlay.className = "saving-overlay";
+  overlay.innerHTML = '<div class="saving-box"><div class="spinner"></div><p>Создание изображения...</p></div>';
+  document.body.appendChild(overlay);
+
+  var certContainer = document.getElementById("certContainer");
+  certContainer.style.left = "0";
+  certContainer.style.position = "fixed";
+  certContainer.style.top = "0";
+  certContainer.style.zIndex = "-1";
+  certContainer.style.opacity = "1";
+
+  setTimeout(function() {
+    html2canvas(document.getElementById("certCard"), {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      logging: false
+    }).then(function(canvas) {
+      certContainer.style.left = "-9999px";
+      certContainer.style.position = "absolute";
+      overlay.remove();
+
+      canvas.toBlob(function(blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "STEAM_результат_" + userName.replace(/\s+/g, "_") + ".png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+      }, "image/png");
+    }).catch(function() {
+      certContainer.style.left = "-9999px";
+      certContainer.style.position = "absolute";
+      overlay.remove();
+      showModal("Не удалось создать изображение. Попробуйте ещё раз.", "OK", null);
+    });
+  }, 300);
+}
+
+/* ============ RESTART ============ */
+function restartQuiz() {
+  currentSectionIdx = 0;
+  userAnswers = {};
+  document.getElementById("fioInput").value = userName;
+  showScreen("welcomeScreen");
+}
+
+/* ============ UTILS ============ */
+function escapeHtml(text) {
+  var div = document.createElement("div");
+  div.appendChild(document.createTextNode(text));
+  return div.innerHTML;
+}
+
+function arraysEqual(a, b) {
+  if (a.length !== b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+function padZero(n) {
+  return n < 10 ? "0" + n : "" + n;
+}
+
+function pluralize(n, one, few, many) {
+  var abs = Math.abs(n) % 100;
+  var lastDigit = abs % 10;
+  if (abs > 10 && abs < 20) return many;
+  if (lastDigit > 1 && lastDigit < 5) return few;
+  if (lastDigit === 1) return one;
+  return many;
+}
+
+function showModal(message, confirmText, onConfirm) {
+  var overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+
+  var box = document.createElement("div");
+  box.className = "modal-box";
+
+  var p = document.createElement("p");
+  p.textContent = message;
+  box.appendChild(p);
+
+  var actions = document.createElement("div");
+  actions.className = "modal-actions";
+
+  if (onConfirm) {
+    var cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn btn-secondary";
+    cancelBtn.textContent = "Отмена";
+    cancelBtn.addEventListener("click", function() { overlay.remove(); });
+    actions.appendChild(cancelBtn);
+  }
+
+  var confirmBtn = document.createElement("button");
+  confirmBtn.className = "btn btn-primary";
+  confirmBtn.textContent = confirmText;
+  confirmBtn.addEventListener("click", function() {
+    overlay.remove();
+    if (onConfirm) onConfirm();
+  });
+  actions.appendChild(confirmBtn);
+
+  box.appendChild(actions);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+</script>
+</body>
+</html>
