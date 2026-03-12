@@ -4,8 +4,8 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <title>Тест: STEAM-образование</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
  <style>
  :root {
    --bg: #f5f0e8;
@@ -55,7 +55,7 @@
  * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
 body {
-   font-family: 'Nunito Sans', sans-serif;
+   font-family: 'Arial Narrow', Arial, sans-serif;
   background: var(--bg);
    color: var(--text);
    min-height: 100vh;
@@ -170,7 +170,7 @@ h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
   border: 2px solid var(--option-border);
   border-radius: var(--radius-sm);
   font-size: 16px;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Arial Narrow', Arial, sans-serif;
   background: var(--option-bg);
   color: var(--text);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -197,7 +197,7 @@ h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
   padding: 14px 32px;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Arial Narrow', Arial, sans-serif;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -690,7 +690,7 @@ h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(255,255,255,0.07);
-    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    font-family: 'Arial Narrow', Arial, sans-serif;
   }
   .steam-nav-logo {
     font-size: 1.05rem;
@@ -728,6 +728,61 @@ h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
     .steam-nav-links { display: none; }
     .steam-nav { padding: 12px 20px; }
   }
+
+
+  /* ===== RADAR CHART ===== */
+  .radar-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border, #e0d8cc);
+    text-align: center;
+  }
+  .radar-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  .radar-canvas-wrap {
+    position: relative;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  /* ===== REVIEW PANEL ===== */
+  .review-panel {
+    display: none;
+    margin-top: 24px;
+  }
+  .review-panel.open { display: block; }
+  .review-item {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .review-item.review-correct { border-left-color: #27ae60; }
+  .review-item.review-incorrect { border-left-color: #e74c3c; }
+  .review-item.review-skipped { border-left-color: #aaa; }
+  .review-q-text { font-size: 0.88rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+  .review-option { font-size: 0.82rem; padding: 6px 10px; border-radius: 7px; margin-bottom: 5px; }
+  .review-option.is-correct { background: rgba(39,174,96,0.13); color: #1e7d3e; font-weight: 700; }
+  .review-option.is-user-wrong { background: rgba(231,76,60,0.13); color: #b02020; text-decoration: line-through; }
+  .review-option.neutral { color: var(--text2, #555); }
+  .review-section-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text2, #777); margin: 20px 0 10px; }
+  .review-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+  .tag-correct { background: rgba(39,174,96,0.12); color: #27ae60; }
+  .tag-incorrect { background: rgba(231,76,60,0.12); color: #e74c3c; }
+  .tag-skipped { background: rgba(150,150,150,0.12); color: #888; }
+  .btn-review {
+    background: linear-gradient(135deg, #3d6b8e, #5a8fb5);
+    color: white; border: none; border-radius: 10px;
+    padding: 12px 24px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(61,107,142,0.3);
+  }
+  .btn-review:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(61,107,142,0.4); }
 
 </style>
 </head>
@@ -817,14 +872,26 @@ h1,h2,h3,h4 { font-family: 'Lora', serif; font-weight: 700; }
       <div class="section-results" id="sectionResults"></div>
     </div>
 
-    <div class="actions-row">
+    <div class="radar-section">
+      <h3>Профиль знаний по разделам</h3>
+      <div class="radar-canvas-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+
+    <div class="actions-row" style="margin-top:24px;">
       <button class="btn btn-success" onclick="saveAsImage()">
         📸 Сохранить результат
+      </button>
+      <button class="btn-review" onclick="toggleReview(this)">
+        📋 Посмотреть правильные ответы
       </button>
       <button class="btn btn-secondary" onclick="restartQuiz()">
         🔄 Пройти заново
       </button>
     </div>
+
+    <div class="review-panel" id="reviewPanel"></div>
   </div>
 </div>
 
@@ -1445,6 +1512,9 @@ function calculateResults() {
   }
   document.getElementById("sectionResults").innerHTML = srHTML;
 
+  // Draw radar chart
+  setTimeout(function() { drawRadarChart(sectionScores); }, 100);
+
   // Build cert card for image
 
   /* ===== Save result to localStorage ===== */
@@ -1535,6 +1605,126 @@ function saveAsImage() {
 }
 
 /* ============ RESTART ============ */
+
+/* ============ RADAR CHART ============ */
+var radarChartInstance = null;
+
+function drawRadarChart(sectionScores) {
+  var canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  if (radarChartInstance) { radarChartInstance.destroy(); radarChartInstance = null; }
+
+  var labels = sectionScores.map(function(s) {
+    // wrap long labels
+    var words = s.id.split(' ');
+    if (s.id.length > 12) {
+      var mid = Math.ceil(words.length / 2);
+      return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+    }
+    return s.id;
+  });
+  var data = sectionScores.map(function(s) {
+    return Math.round((s.correct / s.total) * 100);
+  });
+
+  radarChartInstance = new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Результат (%)',
+        data: data,
+        backgroundColor: 'rgba(61,107,142,0.18)',
+        borderColor: 'rgba(61,107,142,0.85)',
+        borderWidth: 2.5,
+        pointBackgroundColor: data.map(function(v) {
+          if (v >= 75) return '#27ae60';
+          if (v >= 50) return '#f39c12';
+          return '#e74c3c';
+        }),
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: {
+            stepSize: 25,
+            font: { size: 10, family: "'Arial Narrow', Arial, sans-serif" },
+            color: '#999',
+            backdropColor: 'transparent',
+            callback: function(v) { return v + '%'; }
+          },
+          grid: { color: 'rgba(100,120,150,0.15)' },
+          angleLines: { color: 'rgba(100,120,150,0.2)' },
+          pointLabels: {
+            font: { size: 11, weight: '600', family: "'Arial Narrow', Arial, sans-serif" },
+            color: '#4a4a6a'
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ctx.raw + '%'; }
+          }
+        }
+      }
+    }
+  });
+}
+
+/* ============ REVIEW ANSWERS ============ */
+function toggleReview(btn) {
+  var panel = document.getElementById('reviewPanel');
+  if (panel.classList.contains('open')) {
+    panel.classList.remove('open');
+    btn.textContent = '📋 Посмотреть правильные ответы';
+    return;
+  }
+  // Build review HTML
+  var html = '';
+  for (var si = 0; si < sections.length; si++) {
+    var sec = sections[si];
+    html += '<div class="review-section-title">' + sec.full + '</div>';
+    for (var qi = 0; qi < sec.questions.length; qi++) {
+      var key = getAnswerKey(si, qi);
+      var question = sec.questions[qi];
+      var userAns = userAnswers[key] || [];
+      var correctAns = question.c.slice().sort();
+      var userSorted = userAns.slice().sort();
+      var isCorrect = arraysEqual(userSorted, correctAns);
+      var isSkipped = userAns.length === 0;
+
+      var itemClass = isSkipped ? 'review-skipped' : (isCorrect ? 'review-correct' : 'review-incorrect');
+      var tagClass = isSkipped ? 'tag-skipped' : (isCorrect ? 'tag-correct' : 'tag-incorrect');
+      var tagText = isSkipped ? 'Пропущен' : (isCorrect ? 'Верно' : 'Неверно');
+
+      html += '<div class="review-item ' + itemClass + '">';
+      html += '<span class="review-tag ' + tagClass + '">' + tagText + '</span>';
+      html += '<div class="review-q-text">' + (qi + 1) + '. ' + escapeHtml(question.q) + '</div>';
+      for (var oi = 0; oi < question.o.length; oi++) {
+        var isCorrectOpt = correctAns.indexOf(oi) !== -1;
+        var isUserOpt = userAns.indexOf(oi) !== -1;
+        var cls = 'neutral';
+        var prefix = '◦ ';
+        if (isCorrectOpt) { cls = 'is-correct'; prefix = '✓ '; }
+        else if (isUserOpt && !isCorrectOpt) { cls = 'is-user-wrong'; prefix = '✗ '; }
+        html += '<div class="review-option ' + cls + '">' + prefix + escapeHtml(question.o[oi]) + '</div>';
+      }
+      html += '</div>';
+    }
+  }
+  panel.innerHTML = html;
+  panel.classList.add('open');
+  btn.textContent = '▲ Скрыть ответы';
+}
+
 function restartQuiz() {
   currentSectionIdx = 0;
   userAnswers = {};
